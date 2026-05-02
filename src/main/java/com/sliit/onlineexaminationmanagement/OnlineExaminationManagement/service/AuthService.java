@@ -7,17 +7,24 @@ import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.U
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.StudentRepository;
 
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 
 public class AuthService {
 
     private final UserRepository userRepository;
     private final StudentRepository studentRepository;
-
+    private final EmailService emailService;
+    public AuthService(UserRepository userRepository,
+                       StudentRepository studentRepository,
+                       EmailService emailService)
+    {
+        this.userRepository = userRepository;
+        this.studentRepository = studentRepository;
+        this.emailService = emailService;
+    }
     public String registerStudent(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already registered");
@@ -39,6 +46,7 @@ public class AuthService {
         studentRepository.save(student);
 
         return "Registration submitted successfully.";
+
     }
 
 }
