@@ -13,6 +13,7 @@ public class EmailService {
 
     public void sendApprovalEmail(String toEmail, String name, String rollNumber, String password) {
         SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("tharindupiyangabc@gmail.com");
         message.setTo(toEmail);
         message.setSubject("Your Registration Has Been Approved!");
         message.setText(
