@@ -1,5 +1,6 @@
 package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.controller;
 
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.dto.LoginRequest;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.dto.RegisterRequest;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -19,5 +20,10 @@ public class AuthController {
     public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
         String result = authService.registerStudent(request);
         return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        return ResponseEntity.ok(authService.loginUser(request));
     }
 }

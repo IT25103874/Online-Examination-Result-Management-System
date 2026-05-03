@@ -49,4 +49,34 @@ public class AuthService {
 
     }
 
+    public LoginResponse loginUser(LoginRequest request) {
+        User user;
+
+        if (userRepository.existsByEmail(request.getEmail())) {
+            user = userRepository.findByEmail(request.getEmail())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+        } else {
+            Student student = studentRepository.findByRollNumber(request.getEmail())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            user = student.getUser();
+        }
+
+        if (!user.getStatus().equals("ACTIVE")) {
+            throw new RuntimeException("Account is not active yet");
+        }
+
+        if (!request.getPassword().equals(user.getPassword())) {
+            throw new RuntimeException("Invalid password");
+        }
+
+        return new LoginResponse(
+                user.getUserId(),
+                user.getName(),
+                user.getEmail(),
+                user.getRole(),
+                user.getStatus()
+        );
+    }
+
+
 }
