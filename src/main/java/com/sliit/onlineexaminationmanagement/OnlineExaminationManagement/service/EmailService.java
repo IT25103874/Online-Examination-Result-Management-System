@@ -28,4 +28,20 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    public void sendLecturerCredentials(String toEmail, String name, String password) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("tharindupiyangabc@gmail.com");
+        message.setTo(toEmail);
+        message.setSubject("Your Lecturer Account Has Been Created");
+        message.setText(
+                "Dear " + name + ",\n\n" +
+                        "Your lecturer account has been created.\n\n" +
+                        "Login credentials:\n" +
+                        "Email    : " + toEmail + "\n" +
+                        "Password : " + password + "\n\n" +
+                        "Please login and change your password.\n\n" +
+                        "Regards,\nAdmin Team"
+        );
+        mailSender.send(message);
+    }
 }

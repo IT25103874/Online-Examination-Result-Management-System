@@ -3,6 +3,9 @@ package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.servic
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.dto.*;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.Student;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.User;
+// Add these two missing imports
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.Teacher;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.TeacherRepository;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.StudentRepository;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -13,13 +16,16 @@ public class AuthService {
     private final UserRepository userRepository;
     private final StudentRepository studentRepository;
     private final EmailService emailService;
+    private final TeacherRepository teacherRepository;
 
     public AuthService(UserRepository userRepository,
                        StudentRepository studentRepository,
-                       EmailService emailService) {
+                       EmailService emailService,
+                       TeacherRepository teacherRepository) {
         this.userRepository = userRepository;
         this.studentRepository = studentRepository;
         this.emailService = emailService;
+        this.teacherRepository = teacherRepository;
     }
 
     public String registerStudent(RegisterRequest request) {
@@ -46,12 +52,15 @@ public class AuthService {
     }
 
     public LoginResponse loginUser(LoginRequest request) {
+
         User user;
 
+        // try find by email first
         if (userRepository.existsByEmail(request.getEmail())) {
             user = userRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found"));
         } else {
+            // try find by roll number
             Student student = studentRepository.findByRollNumber(request.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found"));
             user = student.getUser();
@@ -106,6 +115,38 @@ public class AuthService {
         emailService.sendApprovalEmail(user.getEmail(), user.getName(), rollNumber, rawPassword);
 
         return "Student approved successfully. Email sent to " + user.getEmail();
+    }
+
+    public String createLecturer(CreateLecturerRequest request) {
+
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Email already exists");
+        }
+
+        // generate password
+        String rawPassword = generatePassword();
+
+        // save to users table
+        User user = new User();
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setPassword(rawPassword);
+        user.setRole("LECTURER");
+        user.setStatus("ACTIVE");
+        userRepository.save(user);
+
+        // save to teacher table
+        Teacher teacher = new Teacher();
+        teacher.setPhone(request.getPhone());
+        teacher.setDepartment(request.getDepartment());
+        teacher.setQualification(request.getQualification());
+        teacher.setUser(user);
+        teacherRepository.save(teacher);
+
+        // send email
+        emailService.sendLecturerCredentials(request.getEmail(), request.getName(), rawPassword);
+
+        return "Lecturer created successfully. Email sent to " + request.getEmail();
     }
 
     private String generateRollNumber(String courseId) {
