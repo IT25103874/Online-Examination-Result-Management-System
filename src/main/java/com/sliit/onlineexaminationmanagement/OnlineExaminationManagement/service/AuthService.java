@@ -149,6 +149,30 @@ public class AuthService {
         return "Lecturer created successfully. Email sent to " + request.getEmail();
     }
 
+    public String updateProfile(Integer userId, UpdateProfileRequest request) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setName(request.getName());
+        userRepository.save(user);
+
+        // update phone in student or teacher table
+        if (user.getRole().equals("STUDENT")) {
+            studentRepository.findByUser_UserId(userId).ifPresent(student -> {
+                student.setPhone(request.getPhone());
+                studentRepository.save(student);
+            });
+        } else if (user.getRole().equals("LECTURER")) {
+            teacherRepository.findByUser_UserId(userId).ifPresent(teacher -> {
+                teacher.setPhone(request.getPhone());
+                teacherRepository.save(teacher);
+            });
+        }
+
+        return "Profile updated successfully.";
+    }
+
     private String generateRollNumber(String courseId) {
         String year = String.valueOf(java.time.Year.now().getValue()).substring(2);
         String prefix = courseId.toUpperCase().startsWith("IT") ? "IT" : "BM";
