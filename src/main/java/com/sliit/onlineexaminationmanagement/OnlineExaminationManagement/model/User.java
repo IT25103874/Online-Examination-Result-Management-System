@@ -29,4 +29,7 @@ public class User {
 
     @Column(name = "status", length = 25)
     private String status; // "PENDING"
+
+    @Column(name = "rejection_reason", length = 255)
+    private String rejectionReason; // filled when admin rejects
 }

@@ -3,7 +3,6 @@ package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.servic
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.dto.*;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.Student;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.User;
-// Add these two missing imports
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.Teacher;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.TeacherRepository;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.StudentRepository;
@@ -29,10 +28,27 @@ public class AuthService {
     }
 
     public String registerStudent(RegisterRequest request) {
+
+        // check if email already exists
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already registered");
+            User existing = userRepository.findByEmail(request.getEmail())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            if (existing.getStatus().equals("REJECTED")) {
+                // delete old student record first
+                studentRepository.findByUser_UserId(existing.getUserId())
+                        .ifPresent(studentRepository::delete);
+                // delete old user record
+                userRepository.delete(existing);
+                // now continue to re-register below
+
+            } else {
+                // PENDING, ACTIVE, INACTIVE — block re-register
+                throw new RuntimeException("Email already registered");
+            }
         }
 
+        // create new user
         User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
@@ -41,6 +57,7 @@ public class AuthService {
         user.setStatus("PENDING");
         userRepository.save(user);
 
+        // create new student
         Student student = new Student();
         student.setCourseId(request.getCourseId());
         student.setDateOfBirth(request.getDateOfBirth());
@@ -84,7 +101,6 @@ public class AuthService {
     }
 
     public String approveStudent(Integer userId) {
-        // find user
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -92,29 +108,61 @@ public class AuthService {
             throw new RuntimeException("User is not pending");
         }
 
-        // find student
         Student student = studentRepository.findByUser_UserId(userId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
-        // generate roll number based on course
         String rollNumber = generateRollNumber(student.getCourseId());
-
-        // generate random password
         String rawPassword = generatePassword();
 
-        // update student
         student.setRollNumber(rollNumber);
         studentRepository.save(student);
 
-        // update user
         user.setPassword(rawPassword);
         user.setStatus("ACTIVE");
         userRepository.save(user);
 
-        // send email
         emailService.sendApprovalEmail(user.getEmail(), user.getName(), rollNumber, rawPassword);
 
         return "Student approved successfully. Email sent to " + user.getEmail();
+    }
+
+    // ── REJECT student registration ──────────────────────────────────────────
+    public String rejectStudent(Integer userId, String reason) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!user.getRole().equals("STUDENT")) {
+            throw new RuntimeException("User is not a student");
+        }
+        if (!user.getStatus().equals("PENDING")) {
+            throw new RuntimeException("Only PENDING students can be rejected");
+        }
+
+        user.setStatus("REJECTED");
+        user.setRejectionReason(reason);
+        userRepository.save(user);
+
+        emailService.sendRejectionEmail(user.getEmail(), user.getName(), reason);
+
+        return "Student rejected. Email sent to " + user.getEmail();
+    }
+
+    // ── DEACTIVATE / REACTIVATE user ─────────────────────────────────────────
+    public String toggleUserStatus(Integer userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.getStatus().equals("ACTIVE")) {
+            user.setStatus("INACTIVE");
+            userRepository.save(user);
+            return "User deactivated successfully.";
+        } else if (user.getStatus().equals("INACTIVE")) {
+            user.setStatus("ACTIVE");
+            userRepository.save(user);
+            return "User reactivated successfully.";
+        } else {
+            throw new RuntimeException("Cannot toggle status. Current status: " + user.getStatus());
+        }
     }
 
     public String createLecturer(CreateLecturerRequest request) {
@@ -123,10 +171,8 @@ public class AuthService {
             throw new RuntimeException("Email already exists");
         }
 
-        // generate password
         String rawPassword = generatePassword();
 
-        // save to users table
         User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
@@ -135,7 +181,6 @@ public class AuthService {
         user.setStatus("ACTIVE");
         userRepository.save(user);
 
-        // save to teacher table
         Teacher teacher = new Teacher();
         teacher.setPhone(request.getPhone());
         teacher.setDepartment(request.getDepartment());
@@ -143,7 +188,6 @@ public class AuthService {
         teacher.setUser(user);
         teacherRepository.save(teacher);
 
-        // send email
         emailService.sendLecturerCredentials(request.getEmail(), request.getName(), rawPassword);
 
         return "Lecturer created successfully. Email sent to " + request.getEmail();
@@ -157,7 +201,6 @@ public class AuthService {
         user.setName(request.getName());
         userRepository.save(user);
 
-        // update phone in student or teacher table
         if (user.getRole().equals("STUDENT")) {
             studentRepository.findByUser_UserId(userId).ifPresent(student -> {
                 student.setPhone(request.getPhone());

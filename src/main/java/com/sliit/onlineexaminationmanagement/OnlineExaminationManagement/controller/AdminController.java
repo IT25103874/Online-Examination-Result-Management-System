@@ -1,6 +1,7 @@
 package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.controller;
 
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.dto.CreateLecturerRequest;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.dto.RejectRequest;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.User;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.UserRepository;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.service.AuthService;
@@ -32,6 +33,20 @@ public class AdminController {
     @PutMapping("/approve/{userId}")
     public ResponseEntity<String> approveStudent(@PathVariable Integer userId) {
         return ResponseEntity.ok(authService.approveStudent(userId));
+    }
+
+    // reject a student with reason
+    @PutMapping("/reject/{userId}")
+    public ResponseEntity<String> rejectStudent(
+            @PathVariable Integer userId,
+            @RequestBody RejectRequest request) {
+        return ResponseEntity.ok(authService.rejectStudent(userId, request.getReason()));
+    }
+
+    // deactivate or reactivate a user
+    @PutMapping("/toggle-status/{userId}")
+    public ResponseEntity<String> toggleUserStatus(@PathVariable Integer userId) {
+        return ResponseEntity.ok(authService.toggleUserStatus(userId));
     }
 
     @PostMapping("/create-lecturer")

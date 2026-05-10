@@ -44,4 +44,20 @@ public class EmailService {
         );
         mailSender.send(message);
     }
+
+    public void sendRejectionEmail(String toEmail, String name, String reason) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("tharindupiyangabc@gmail.com");
+        message.setTo(toEmail);
+        message.setSubject("Your Registration Has Been Rejected");
+        message.setText(
+                "Dear " + name + ",\n\n" +
+                        "Unfortunately, your registration has been rejected.\n\n" +
+                        "Reason: " + reason + "\n\n" +
+                        "You may re-register with corrected details at any time.\n" +
+                        "Please fix the issue mentioned above before registering again.\n\n" +
+                        "Regards,\nAdmin Team"
+        );
+        mailSender.send(message);
+    }
 }
