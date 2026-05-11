@@ -32,4 +32,13 @@ public class User {
 
     @Column(name = "rejection_reason", length = 255)
     private String rejectionReason; // filled when admin rejects
+
+    @Column(name = "credentials_sent_at")
+    private java.time.LocalDateTime credentialsSentAt;
+
+    @Column(name = "last_login_at")
+    private java.time.LocalDateTime lastLoginAt;
+
+    @Column(name = "deactivation_reason", length = 255)
+    private String deactivationReason;
 }

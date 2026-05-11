@@ -45,6 +45,35 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    public void sendDeactivationEmail(String toEmail, String name, String reason) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("tharindupiyangabc@gmail.com");
+        message.setTo(toEmail);
+        message.setSubject("Your Account Has Been Deactivated");
+        message.setText(
+                "Dear " + name + ",\n\n" +
+                        "Your account has been deactivated.\n\n" +
+                        "Reason: " + reason + "\n\n" +
+                        "Contact admin if you have questions.\n\n" +
+                        "Regards,\nAdmin Team"
+        );
+        mailSender.send(message);
+    }
+
+    public void sendReactivationEmail(String toEmail, String name) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("tharindupiyangabc@gmail.com");
+        message.setTo(toEmail);
+        message.setSubject("Your Account Has Been Reactivated");
+        message.setText(
+                "Dear " + name + ",\n\n" +
+                        "Your account has been reactivated.\n\n" +
+                        "You can now login using your credentials.\n\n" +
+                        "Regards,\nAdmin Team"
+        );
+        mailSender.send(message);
+    }
+
     public void sendRejectionEmail(String toEmail, String name, String reason) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("tharindupiyangabc@gmail.com");
