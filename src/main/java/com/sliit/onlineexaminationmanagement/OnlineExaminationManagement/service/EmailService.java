@@ -89,4 +89,18 @@ public class EmailService {
         );
         mailSender.send(message);
     }
+
+    // NEW: send notification email to student/lecturer
+    public void sendNotificationEmail(String toEmail, String name, String title, String message) {
+        SimpleMailMessage mail = new SimpleMailMessage();
+        mail.setFrom("tharindupiyangabc@gmail.com");
+        mail.setTo(toEmail);
+        mail.setSubject(title);
+        mail.setText(
+                "Dear " + name + ",\n\n" +
+                        message + "\n\n" +
+                        "Regards,\nAdmin Team"
+        );
+        mailSender.send(mail);
+    }
 }
