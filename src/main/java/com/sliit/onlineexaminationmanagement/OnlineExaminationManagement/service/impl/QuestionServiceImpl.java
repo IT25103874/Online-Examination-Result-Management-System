@@ -22,6 +22,19 @@ public class QuestionServiceImpl implements QuestionService {
         return questionRepository.save(question);
     }
 
+    // QuestionServiceImpl.java තුළ
+    @Override
+    public Question updateQuestion(Integer id, Question questionDetails) {
+        Question existingQuestion = questionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Question not found with id: " + id));
+
+        existingQuestion.setQuestionText(questionDetails.getQuestionText());
+        existingQuestion.setQuestionType(questionDetails.getQuestionType());
+        existingQuestion.setMarks(questionDetails.getMarks());
+
+        return questionRepository.save(existingQuestion);
+    }
+
     @Override
     public List<Question> getQuestionBank() {
         return questionRepository.findAll();

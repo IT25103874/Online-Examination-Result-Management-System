@@ -19,6 +19,11 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.addQuestion(question));
     }
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Question> update(@PathVariable Integer id, @RequestBody Question question) {
+        return ResponseEntity.ok(questionService.updateQuestion(id, question));
+    }
+
     @GetMapping("/bank")
     public ResponseEntity<List<Question>> getAll() {
         return ResponseEntity.ok(questionService.getQuestionBank());
