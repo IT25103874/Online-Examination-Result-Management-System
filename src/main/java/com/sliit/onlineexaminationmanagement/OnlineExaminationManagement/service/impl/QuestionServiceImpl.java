@@ -41,6 +41,12 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
+    public Question getQuestionById(Integer id) {
+        return questionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Question not found with id: " + id));
+    }
+
+    @Override
     public void deleteQuestion(Integer id) {
         questionRepository.deleteById(id);
     }

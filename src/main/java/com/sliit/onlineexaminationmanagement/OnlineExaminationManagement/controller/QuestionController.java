@@ -29,6 +29,11 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.getQuestionBank());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Question> getById(@PathVariable Integer id) {
+        return ResponseEntity.ok(questionService.getQuestionById(id)); // මෙය Service එකේ තිබිය යුතුය
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable Integer id) {
         questionService.deleteQuestion(id);
