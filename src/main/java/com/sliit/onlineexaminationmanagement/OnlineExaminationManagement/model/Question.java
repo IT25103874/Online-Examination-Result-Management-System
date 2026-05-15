@@ -23,6 +23,13 @@ public class Question {
 
     private String marks;
 
+    // පවතින Question class එක ඇතුළත මේවා එකතු කරන්න
+    @ManyToOne
+    @JoinColumn(name = "subject_id")
+    private Subject subject;
+
+    private String difficultyLevel; // "Easy", "Medium", "Hard"
+
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     private List<Option> options;
 }

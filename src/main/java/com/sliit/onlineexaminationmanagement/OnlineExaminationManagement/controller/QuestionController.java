@@ -14,6 +14,7 @@ public class QuestionController {
 
     private final QuestionService questionService;
 
+
     @PostMapping("/add")
     public ResponseEntity<Question> create(@RequestBody Question question) {
         return ResponseEntity.ok(questionService.addQuestion(question));
