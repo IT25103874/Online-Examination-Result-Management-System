@@ -68,13 +68,25 @@ public class AuthService {
     public LoginResponse loginUser(LoginRequest request) {
 
         User user;
+        Student student = null;
 
         if (userRepository.existsByEmail(request.getEmail())) {
+
             user = userRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found"));
+
+            if(user.getRole().equals("STUDENT")) {
+
+                student = studentRepository
+                        .findByUser_UserId(user.getUserId())
+                        .orElse(null);
+            }
+
         } else {
-            Student student = studentRepository.findByRollNumber(request.getEmail())
+
+            student = studentRepository.findByRollNumber(request.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found"));
+
             user = student.getUser();
         }
 
@@ -91,11 +103,26 @@ public class AuthService {
         userRepository.save(user);
 
         return new LoginResponse(
+
                 user.getUserId(),
+
                 user.getName(),
+
                 user.getEmail(),
+
                 user.getRole(),
-                user.getStatus()
+
+                user.getStatus(),
+
+                student != null ? student.getPhone() : null,
+
+                student != null ? student.getCourseId() : null,
+
+                student != null && student.getDateOfBirth() != null
+                        ? student.getDateOfBirth().toString()
+                        : null,
+
+                student != null ? student.getRollNumber() : null
         );
     }
 
@@ -252,11 +279,25 @@ public class AuthService {
     }
 
     private String generateRollNumber(String courseId) {
+
         String year = String.valueOf(java.time.Year.now().getValue()).substring(2);
-        String prefix = courseId.toUpperCase().startsWith("IT") ? "IT" : "BM";
-        long count = studentRepository.countByCourseId(courseId) + 1;
-        String sequence = String.format("%04d", count);
-        return prefix + year + sequence;
+
+        String prefix =
+                courseId.toUpperCase().startsWith("IT")
+                        ? "IT"
+                        : "BM";
+
+        String rollNumber;
+
+        do {
+
+            int random = 1000 + new java.util.Random().nextInt(9000);
+
+            rollNumber = prefix + year + random;
+
+        } while(studentRepository.findByRollNumber(rollNumber).isPresent());
+
+        return rollNumber;
     }
 
     private String generatePassword() {
