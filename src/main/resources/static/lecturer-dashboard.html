@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Lecturer Dashboard - EduAssess Pro</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex">
+
+<!-- Sidebar -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-white border-r shadow-sm flex flex-col z-40">
+    <div class="p-6 border-b">
+        <h1 class="text-2xl font-black text-blue-900">EduAssess Pro</h1>
+    </div>
+
+    <div class="p-4 space-y-2 flex-grow">
+        <!-- Lecturer Profile Quick View -->
+        <div class="flex items-center gap-3 p-3 bg-gray-100 rounded-lg mb-6">
+            <div class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg" id="avatar-initials">
+                LC
+            </div>
+            <div>
+                <p id="lecturer-name-sidebar" class="font-bold text-blue-900">Dr. Lecturer</p>
+                <p class="text-sm text-gray-500 font-mono">Faculty</p>
+            </div>
+        </div>
+
+        <a href="/lecturer-dashboard.html" class="flex items-center gap-3 p-3 rounded-lg bg-indigo-600 text-white font-bold transition-colors">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span>Dashboard</span>
+        </a>
+
+        <a href="#" class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 text-gray-700 transition-colors">
+            <span class="material-symbols-outlined">menu_book</span>
+            <span>My Subjects</span>
+        </a>
+
+        <a href="#" class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 text-gray-700 transition-colors">
+            <span class="material-symbols-outlined">assignment</span>
+            <span>Manage Exams</span>
+        </a>
+
+        <a href="#" class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 text-gray-700 transition-colors">
+            <span class="material-symbols-outlined">group</span>
+            <span>Students</span>
+        </a>
+    </div>
+
+    <div class="p-4 border-t">
+        <button onclick="logout()" class="w-full bg-red-50 text-red-600 py-3 rounded-lg hover:bg-red-100 transition-colors font-bold flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-[20px]">logout</span>
+            <span>Logout</span>
+        </button>
+    </div>
+</aside>
+
+<!-- Main Content -->
+<main class="ml-64 flex-1 p-8 md:p-10 overflow-y-auto">
+
+    <!-- Top Navigation Area -->
+    <header class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-black text-blue-900" id="welcome-message">Welcome, Faculty!</h1>
+            <p class="text-gray-500 mt-1">Manage your courses and exam schedules.</p>
+        </div>
+        <div class="flex items-center gap-4">
+            <button class="p-2 bg-white border rounded-full text-gray-600 hover:bg-gray-50 relative">
+                <span class="material-symbols-outlined">notifications</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Lecturer Profile Card -->
+    <div class="bg-white rounded-2xl border p-6 mb-8 flex flex-col md:flex-row gap-6 items-center md:items-start shadow-sm">
+        <div class="w-24 h-24 rounded-full bg-indigo-50 text-indigo-600 border-4 border-indigo-100 flex items-center justify-center font-bold text-3xl" id="main-avatar">
+            LC
+        </div>
+        <div class="flex-1 text-center md:text-left">
+            <h2 class="text-2xl font-bold text-gray-800" id="lecturer-name">Dr. Lecturer Name</h2>
+            <div class="flex flex-wrap justify-center md:justify-start gap-4 mt-3">
+                <div class="flex items-center gap-1 text-sm bg-gray-100 px-3 py-1 rounded-full text-gray-700">
+                    <span class="material-symbols-outlined text-[16px]">account_balance</span>
+                    <span class="font-medium" id="lecturer-dept">Department: Computer Science</span>
+                </div>
+                <div class="flex items-center gap-1 text-sm bg-gray-100 px-3 py-1 rounded-full text-gray-700">
+                    <span class="material-symbols-outlined text-[16px]">mail</span>
+                    <span id="lecturer-email">lecturer@university.edu</span>
+                </div>
+                <div class="flex items-center gap-1 text-sm bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium">
+                    <span class="material-symbols-outlined text-[16px]">check_circle</span>
+                    <span>Active Status</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Subject List -->
+        <div class="bg-white rounded-2xl border shadow-sm flex flex-col col-span-1 lg:col-span-2">
+            <div class="p-5 border-b flex justify-between items-center">
+                <h3 class="text-xl font-bold text-blue-900 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-indigo-500">menu_book</span>
+                    Assigned Subjects
+                </h3>
+            </div>
+            <div class="p-5 flex-1" id="subjects-container">
+                <!-- Static placeholder since there is no Subject endpoint currently -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="border rounded-xl p-4 hover:border-indigo-300 transition-colors bg-gray-50">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-10 h-10 rounded-lg bg-indigo-100 text-indigo-600 flex justify-center items-center font-bold">IT</div>
+                            <h4 class="font-bold text-gray-800">Advanced Java</h4>
+                        </div>
+                        <p class="text-sm text-gray-500">Course ID: IT302</p>
+                        <p class="text-sm text-gray-500 mt-1">Students Enrolled: 45</p>
+                    </div>
+                    <div class="border rounded-xl p-4 hover:border-indigo-300 transition-colors bg-gray-50">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-10 h-10 rounded-lg bg-indigo-100 text-indigo-600 flex justify-center items-center font-bold">SE</div>
+                            <h4 class="font-bold text-gray-800">Software Architecture</h4>
+                        </div>
+                        <p class="text-sm text-gray-500">Course ID: SE401</p>
+                        <p class="text-sm text-gray-500 mt-1">Students Enrolled: 32</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schedule Overview & Notifications -->
+        <div class="flex flex-col gap-8 col-span-1">
+            <!-- Upcoming Schedules -->
+            <div class="bg-white rounded-2xl border shadow-sm flex flex-col">
+                <div class="p-5 border-b">
+                    <h3 class="text-xl font-bold text-blue-900 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-blue-500">calendar_month</span>
+                        Exam Schedules
+                    </h3>
+                </div>
+                <div class="p-5 flex-1 overflow-y-auto" id="schedules-container" style="max-height: 250px;">
+                    <div class="flex items-center justify-center h-20 text-gray-400 text-sm">
+                        Loading schedules...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications Panel -->
+            <div class="bg-white rounded-2xl border shadow-sm flex flex-col">
+                <div class="p-5 border-b flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-blue-900 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-amber-500">campaign</span>
+                        System Alerts
+                    </h3>
+                </div>
+                <div class="p-0 flex-1 overflow-y-auto divide-y" id="notifications-container" style="max-height: 250px;">
+                    <div class="p-4 text-sm text-gray-600">
+                        <div class="font-bold mb-1">Semester Ends Soon</div>
+                        <p class="text-xs text-gray-500">Please finalize exam papers by next Friday.</p>
+                    </div>
+                    <div class="p-4 text-sm text-gray-600">
+                        <div class="font-bold mb-1">System Maintenance</div>
+                        <p class="text-xs text-gray-500">Downtime scheduled for Sunday 2 AM.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</main>
+
+<script src="/js/auth.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Allow TEACHER or LECTURER (Assuming backend uses LECTURER based on the controller we saw earlier)
+        const user = checkAuth('LECTURER'); 
+        if (!user) return;
+
+        // Populate User Info
+        const nameParts = (user.name || '').split(' ');
+        const initials = nameParts.length > 1 ? nameParts[0][0] + nameParts[1][0] : (nameParts[0][0] || 'L');
+
+        document.getElementById('lecturer-name').textContent = user.name;
+        document.getElementById('lecturer-name-sidebar').textContent = user.name;
+        document.getElementById('lecturer-email').textContent = user.email;
+        document.getElementById('welcome-message').textContent = `Welcome, ${nameParts[0] || 'Faculty'}!`;
+        document.getElementById('avatar-initials').textContent = initials.toUpperCase();
+        document.getElementById('main-avatar').textContent = initials.toUpperCase();
+
+        // Department can be extracted if it exists in user object, otherwise static
+        if (user.department) {
+            document.getElementById('lecturer-dept').textContent = `Department: ${user.department}`;
+        }
+
+        // Fetch Schedules
+        try {
+            const schedRes = await fetch('/api/admin/exam-schedule/all');
+            const schedContainer = document.getElementById('schedules-container');
+            if (schedRes.ok) {
+                const schedules = await schedRes.json();
+                schedContainer.innerHTML = '';
+                
+                if (schedules.length === 0) {
+                    schedContainer.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500 text-sm">No upcoming exams.</div>';
+                } else {
+                    schedules.slice(0, 3).forEach(s => {
+                        const div = document.createElement('div');
+                        div.className = 'mb-3 pb-3 border-b border-gray-100 last:border-0 last:mb-0 last:pb-0';
+                        div.innerHTML = `
+                            <h4 class="font-bold text-gray-800 text-sm">${s.examTitle || 'Exam'}</h4>
+                            <div class="text-xs text-gray-500 mt-1 flex justify-between">
+                                <span>${s.courseId || 'General'}</span>
+                                <span>${s.date || 'TBA'}</span>
+                            </div>
+                        `;
+                        schedContainer.appendChild(div);
+                    });
+                }
+            } else {
+                schedContainer.innerHTML = '<div class="text-red-500 text-sm">Failed to load schedules.</div>';
+            }
+        } catch (e) {
+            console.error('Failed to load schedules', e);
+        }
+    });
+</script>
+</body>
+</html>
