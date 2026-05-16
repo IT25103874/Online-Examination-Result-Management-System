@@ -1,5 +1,4 @@
 package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.controller;
-
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.entity.Exam;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.service.ExamService;
 import org.springframework.beans.factory.annotation.Autowired;
