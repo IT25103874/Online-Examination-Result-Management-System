@@ -6,10 +6,7 @@ import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.N
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.NotificationRecipient;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.Student;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.User;
-import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.NotificationRecipientRepository;
-import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.NotificationRepository;
-import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.StudentRepository;
-import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.UserRepository;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +23,7 @@ public class NotificationService {
     private final StudentRepository studentRepository;
     private final UserRepository userRepository;
     private final EmailService emailService;
+    private final ExamNotificationRepository examNotificationRepository;
 
     // ── SEND TO ALL STUDENTS (both IT and BM) ────────────────────────────────
     public String sendToAll(SendNotificationRequest request) {
@@ -34,7 +32,7 @@ public class NotificationService {
         Notification notification = new Notification();
         notification.setTitle(request.getTitle());
         notification.setMessage(request.getMessage());
-        notification.setType("GENERAL");
+        notification.setType(request.getCategory());
         notification.setTarget("ALL");
         notification.setCreatedAt(LocalDateTime.now());
         notification.setSentBy(request.getSentBy());
@@ -67,7 +65,7 @@ public class NotificationService {
         Notification notification = new Notification();
         notification.setTitle(request.getTitle());
         notification.setMessage(request.getMessage());
-        notification.setType("COURSE");
+        notification.setType(request.getCategory());
         notification.setTarget(courseId.toUpperCase());
         notification.setCreatedAt(LocalDateTime.now());
         notification.setSentBy(request.getSentBy());
@@ -110,7 +108,7 @@ public class NotificationService {
         Notification notification = new Notification();
         notification.setTitle(request.getTitle());
         notification.setMessage(request.getMessage());
-        notification.setType("PERSONAL");
+        notification.setType(request.getCategory());
         notification.setTarget("USER_" + userId);
         notification.setCreatedAt(LocalDateTime.now());
         notification.setSentBy(request.getSentBy());
@@ -216,17 +214,22 @@ public class NotificationService {
     }
 
     // ── ADMIN DELETE NOTIFICATION ─────────────────────────────────────────────
+    @org.springframework.transaction.annotation.Transactional
     public String deleteNotification(Integer notificationId) {
+
         if (!notificationRepository.existsById(notificationId)) {
             throw new RuntimeException("Notification not found");
         }
 
-        // delete all recipients first (FK constraint)
-        List<NotificationRecipient> recipients = recipientRepository
-                .findByNotification_NotificationId(notificationId);
-        recipientRepository.deleteAll(recipients);
+        // delete exam notification links first
+        examNotificationRepository
+                .deleteByNotificationId(notificationId);
 
-        // then delete the notification
+        // delete recipient links
+        recipientRepository
+                .deleteByNotificationId(notificationId);
+
+        // finally delete notification
         notificationRepository.deleteById(notificationId);
 
         return "Notification deleted successfully.";
