@@ -2,7 +2,7 @@ package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.List; // මෙතැන List එකතු කිරීමට අමතක කරන්න එපා
+import java.util.List;
 
 @Entity
 @Table(name = "question_paper")
@@ -23,13 +23,13 @@ public class QuestionPaper {
     @Column(name = "exam_exam_id")
     private Integer examId;
 
-    // --- අලුතින් එකතු කළ යුතු කොටස ---
+
     @ManyToMany
     @JoinTable(
-            name = "paper_questions", // මෙය database එකේ අලුතින් හැදෙන junction table එකයි
+            name = "paper_questions",
             joinColumns = @JoinColumn(name = "paper_id"),
             inverseJoinColumns = @JoinColumn(name = "question_id")
     )
     private List<Question> questions;
-    // ---------------------------------
+
 }

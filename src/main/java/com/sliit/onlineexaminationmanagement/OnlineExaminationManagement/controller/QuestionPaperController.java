@@ -27,7 +27,7 @@ public class QuestionPaperController {
 
     @GetMapping("/{id}")
     public ResponseEntity<QuestionPaper> getPaperById(@PathVariable int id) {
-        // මෙහි 'questionPaperService' වෙනුවට 'paperService' භාවිතා කරන්න
+
         QuestionPaper paper = paperService.getPaperById(id);
         if (paper != null) {
             return ResponseEntity.ok(paper);

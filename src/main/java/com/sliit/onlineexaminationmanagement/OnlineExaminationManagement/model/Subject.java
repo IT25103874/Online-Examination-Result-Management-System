@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter @Setter
 public class Subject {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // මෙය අනිවාර්යයෙන්ම තිබිය යුතුය
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer subjectId;
 
     @Column(nullable = false, length = 125)

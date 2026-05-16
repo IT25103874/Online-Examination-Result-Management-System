@@ -32,7 +32,7 @@ public class QuestionController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Question> getById(@PathVariable Integer id) {
-        return ResponseEntity.ok(questionService.getQuestionById(id)); // මෙය Service එකේ තිබිය යුතුය
+        return ResponseEntity.ok(questionService.getQuestionById(id));
     }
 
     @DeleteMapping("/{id}")
