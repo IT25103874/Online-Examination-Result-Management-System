@@ -1,43 +1,65 @@
 package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.controller;
-
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.entity.Exam;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.service.ExamService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.Map;
+
+import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/api/exams")
+@CrossOrigin(origins = "*")
 public class ExamController {
 
     private final ExamService examService;
 
+    @Autowired
     public ExamController(ExamService examService) {
         this.examService = examService;
     }
 
-    @PostMapping("/start")
-    public ResponseEntity<String> enrollAndStart(
-            @RequestParam int studentId,
-            @RequestParam int examId,
-            @RequestParam(defaultValue = "30") int duration) {
-        return ResponseEntity.ok(examService.startExam(studentId, examId, duration));
+    @PostMapping("/schedule")
+    public ResponseEntity<Exam> scheduleExam(@RequestBody Exam exam) {
+        Exam createdExam = examService.createAndScheduleExam(exam);
+        return new ResponseEntity<>(createdExam, HttpStatus.CREATED);
     }
 
-    @PostMapping("/report-cheat/{id}")
-    public ResponseEntity<Void> reportCheating(@PathVariable int id) {
-        examService.flagCheating(id);
-        return ResponseEntity.ok().build();
+    @GetMapping
+    public ResponseEntity<List<Exam>> getAllExams() {
+        return ResponseEntity.ok(examService.getAllExams());
     }
 
-    @PostMapping("/submit/{id}")
-    public ResponseEntity<Map<String, String>> submitAnswers(
-            @PathVariable int id,
-            @RequestBody Map<String, String> answersMap) {
+    @GetMapping("/{id}")
+    public ResponseEntity<Exam> getExamById(@PathVariable Long id) {
+        return ResponseEntity.ok(examService.getExamById(id));
+    }
 
-        String rawJsonString = answersMap.toString();
-        String message = examService.submitAnswers(id, rawJsonString);
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<String> cancelExam(@PathVariable Long id) {
+        examService.cancelExam(id);
+        return ResponseEntity.ok("Exam cancelled successfully.");
+    }
 
-        return ResponseEntity.ok(Map.of("message", message));
+    // New Addition: Update Endpoint
+    @PutMapping("/{id}")
+    public ResponseEntity<Exam> updateExam(@PathVariable Long id, @RequestBody Exam exam) {
+        Exam updated = examService.updateExam(id, exam);
+        return ResponseEntity.ok(updated);
+    }
+
+    // New Addition: Delete Endpoint
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteExam(@PathVariable Long id) {
+        examService.deleteExam(id);
+        return ResponseEntity.ok("Exam deleted successfully from the system.");
+    }
+
+    // New Addition: Search Endpoint (e.g., /api/exams/search?title=java)
+    @GetMapping("/search")
+    public ResponseEntity<List<Exam>> searchExams(@RequestParam String title) {
+        List<Exam> results = examService.searchExamsByTitle(title);
+        return ResponseEntity.ok(results);
     }
 }
