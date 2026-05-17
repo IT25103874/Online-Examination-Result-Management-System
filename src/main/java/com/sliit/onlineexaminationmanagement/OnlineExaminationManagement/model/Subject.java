@@ -1,21 +1,25 @@
 package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Entity
 @Table(name = "subject")
-@Getter @Setter
+@Data @NoArgsConstructor @AllArgsConstructor
 public class Subject {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "subject_id")
     private Integer subjectId;
 
-    @Column(nullable = false, length = 125)
+    @Column(name = "name", length = 125)
     private String name;
 
-    @Column(length = 150)
+    @Column(name = "description", length = 150)
     private String description;
-    
+
+    @Column(name = "course_course_id")
+    private Integer courseCourseId;
 }
