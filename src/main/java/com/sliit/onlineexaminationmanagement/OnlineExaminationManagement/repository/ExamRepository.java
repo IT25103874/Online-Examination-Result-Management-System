@@ -1,12 +1,17 @@
 package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository;
 
-import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.Exam;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.entity.Exam;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-public interface ExamRepository extends JpaRepository<Exam, Integer> {
+@Repository
+public interface ExamRepository extends JpaRepository<Exam, Long> {
 
-    // find all exams for a specific subject
-    List<Exam> findBySubject_SubjectId(Integer subjectId);
+    List<Exam> findByStartTimeBeforeAndEndTimeAfter(LocalDateTime endTime, LocalDateTime startTime);
+
+    // New Addition: Search by title ignoring case
+    List<Exam> findByTitleContainingIgnoreCase(String title);
 }
