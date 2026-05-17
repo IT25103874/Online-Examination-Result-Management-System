@@ -10,5 +10,4 @@ public class OnlineExaminationManagementApplication {
 		System.out.println("Hello World");
 		SpringApplication.run(OnlineExaminationManagementApplication.class, args);
 	}
-
 }
