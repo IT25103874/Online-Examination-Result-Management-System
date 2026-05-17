@@ -1,6 +1,6 @@
 package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.controller;
 
-import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.dto.NotificationResponse;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.DTO.NotificationResponse;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

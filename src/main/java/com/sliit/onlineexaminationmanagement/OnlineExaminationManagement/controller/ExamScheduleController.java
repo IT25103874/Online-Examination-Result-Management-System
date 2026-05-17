@@ -1,6 +1,6 @@
 package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.controller;
 
-import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.dto.CreateExamScheduleRequest;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.DTO.CreateExamScheduleRequest;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.ExamNotification;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.ExamSchedule;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.service.ExamScheduleService;

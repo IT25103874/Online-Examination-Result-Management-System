@@ -1,8 +1,8 @@
 package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.controller;
 
-import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.dto.CreateLecturerRequest;
-import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.dto.RejectRequest;
-import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.dto.ToggleStatusRequest;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.DTO.CreateLecturerRequest;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.DTO.RejectRequest;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.DTO.ToggleStatusRequest;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.User;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.UserRepository;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.service.AuthService;

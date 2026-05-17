@@ -2,7 +2,7 @@ package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.servic
 
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.entity.Course;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.entity.Subject;
-import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.SubjectRepository;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.CourseSubjectRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +15,12 @@ import java.util.List;
 
 public class SubjectServiceImpl implements SubjectService {
 
-    private final SubjectRepository subjectRepository;
+    private final CourseSubjectRepository subjectRepository;
     // Assuming you have a CourseRepository to validate course existence
     // private final CourseRepository courseRepository;
 
     @Autowired
-    public SubjectServiceImpl(SubjectRepository subjectRepository) {
+    public SubjectServiceImpl(CourseSubjectRepository subjectRepository) {
         this.subjectRepository = subjectRepository;
     }
 

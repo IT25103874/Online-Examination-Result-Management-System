@@ -5,31 +5,31 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "exam_attempt")
-public class ExameEntity {
+public class ExamEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long attemptId;
+    private Integer attemptId; // Using Integer wrapper for JPA compatibility
 
-    private Long studentId;
-    private Long examId;
+    private int studentId;
+    private int examId;
     private LocalDateTime startTime;
     private int durationMinutes;
     private boolean submitted;
     private boolean cheated;
 
-    @Column(columnDefinition = "TEXT") // Allows storing heavy payload strings
+    @Column(columnDefinition = "TEXT")
     private String submittedAnswersJson;
 
-    public ExameEntity() {}
+    public ExamEntity() {}
 
     // Getters and Setters
-    public Long getAttemptId() { return attemptId; }
-    public void setAttemptId(Long attemptId) { this.attemptId = attemptId; }
-    public Long getStudentId() { return studentId; }
-    public void setStudentId(Long studentId) { this.studentId = studentId; }
-    public Long getExamId() { return examId; }
-    public void setExamId(Long examId) { this.examId = examId; }
+    public Integer getAttemptId() { return attemptId; }
+    public void setAttemptId(Integer attemptId) { this.attemptId = attemptId; }
+    public int getStudentId() { return studentId; }
+    public void setStudentId(int studentId) { this.studentId = studentId; }
+    public int getExamId() { return examId; }
+    public void setExamId(int examId) { this.examId = examId; }
     public LocalDateTime getStartTime() { return startTime; }
     public void setStartTime(LocalDateTime startTime) { this.startTime = startTime; }
     public int getDurationMinutes() { return durationMinutes; }

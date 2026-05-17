@@ -1,7 +1,7 @@
 package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.service;
 
-import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.dto.NotificationResponse;
-import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.dto.SendNotificationRequest;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.DTO.NotificationResponse;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.DTO.SendNotificationRequest;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.Notification;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.NotificationRecipient;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.Student;

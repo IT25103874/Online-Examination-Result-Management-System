@@ -6,8 +6,8 @@ import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "exams")
+@Entity(name = "ScheduledExam")
+@Table(name = "exam_schedule")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

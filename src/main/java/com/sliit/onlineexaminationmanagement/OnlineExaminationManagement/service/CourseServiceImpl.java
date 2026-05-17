@@ -3,7 +3,7 @@ package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.servic
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.entity.Course;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.entity.Subject;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.CourseRepository;
-import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.SubjectRepository;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.CourseSubjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,10 +14,10 @@ import java.util.List;
 public class CourseServiceImpl implements CourseService {
 
     private final CourseRepository courseRepository;
-    private final SubjectRepository subjectRepository;
+    private final CourseSubjectRepository subjectRepository;
 
     @Autowired
-    public CourseServiceImpl(CourseRepository courseRepository, SubjectRepository subjectRepository) {
+    public CourseServiceImpl(CourseRepository courseRepository, CourseSubjectRepository subjectRepository) {
         this.courseRepository = courseRepository;
         this.subjectRepository = subjectRepository;
     }

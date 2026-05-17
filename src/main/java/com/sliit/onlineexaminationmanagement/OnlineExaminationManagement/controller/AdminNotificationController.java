@@ -1,6 +1,6 @@
 package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.controller;
 
-import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.dto.SendNotificationRequest;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.DTO.SendNotificationRequest;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.Notification;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.service.NotificationService;
 import lombok.RequiredArgsConstructor;

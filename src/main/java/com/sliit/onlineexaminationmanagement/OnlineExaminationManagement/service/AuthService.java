@@ -1,6 +1,10 @@
 package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.service;
 
-import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.dto.*;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.DTO.CreateLecturerRequest;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.DTO.LoginRequest;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.DTO.LoginResponse;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.DTO.UpdateProfileRequest;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.DTO.*;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.Student;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.User;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.Teacher;
@@ -31,7 +35,7 @@ public class AuthService {
     }
 
     // ── REGISTER ──────────────────────────────────────────────────────────────
-    public String registerStudent(RegisterRequest request) {
+    public String registerStudent(com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.DTO.RegisterRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
             User existing = userRepository.findByEmail(request.getEmail())
@@ -303,4 +307,4 @@ public class AuthService {
     private String generatePassword() {
         return java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
-}
+} // 👈 AuthService පන්තිය වැහෙන bracket එක පමණක් ඉතිරි කරන්න

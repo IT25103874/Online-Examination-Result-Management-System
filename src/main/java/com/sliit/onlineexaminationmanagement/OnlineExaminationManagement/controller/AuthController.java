@@ -1,9 +1,9 @@
 package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.controller;
 
-import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.dto.LoginRequest;
-import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.dto.RegisterRequest;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.DTO.LoginRequest;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.DTO.RegisterRequest;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.service.AuthService;
-import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.dto.UpdateProfileRequest;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.DTO.UpdateProfileRequest;
 import org.springframework.web.bind.annotation.PutMapping;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

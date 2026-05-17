@@ -1,6 +1,6 @@
 package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.service;
 
-import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.dto.CreateExamScheduleRequest;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.DTO.CreateExamScheduleRequest;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.*;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -13,13 +13,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class  ExamScheduleService {
 
-    private final ExamRepository examRepository;
+    private final ExamModelRepository examRepository;
     private final ExamScheduleRepository examScheduleRepository;
     private final ExamNotificationRepository examNotificationRepository;
     private final NotificationRepository notificationRepository;
     private final NotificationRecipientRepository notificationRecipientRepository;
     private final StudentRepository studentRepository;
-    private final SubjectRepository subjectRepository;
     private final EmailService emailService;
 
     // ── CREATE EXAM SCHEDULE + AUTO SEND NOTIFICATION ─────────────────────────

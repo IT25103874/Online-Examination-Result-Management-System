@@ -1,4 +1,4 @@
-package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.dto;
+package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.DTO;
 
 import lombok.Data;
 

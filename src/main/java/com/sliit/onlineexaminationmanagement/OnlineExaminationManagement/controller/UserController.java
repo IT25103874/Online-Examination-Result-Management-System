@@ -1,6 +1,7 @@
 package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.controller;
 
-import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.dto.UpdateProfileRequest;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.DTO.UpdateProfileRequest;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.DTO.UpdateProfileRequest;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +15,9 @@ public class UserController {
     private final AuthService authService;
 
     @PutMapping("/update-profile/{userId}")
-    public ResponseEntity<String> updateProfile(
+    public <UpdateProfileRequest> ResponseEntity<String> updateProfile(
             @PathVariable Integer userId,
             @RequestBody UpdateProfileRequest request) {
-        return ResponseEntity.ok(authService.updateProfile(userId, request));
+        return ResponseEntity.ok(authService.updateProfile(userId, (com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.DTO.UpdateProfileRequest) request));
     }
 }

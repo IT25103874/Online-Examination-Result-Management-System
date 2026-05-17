@@ -6,8 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "subjects")
+@Entity(name = "CourseSubject")
+@Table(name = "subject")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,7 +24,7 @@ public class Subject {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "course_id", nullable = false)
+    @JoinColumn(name = "course_course_id", nullable = false)
     @JsonIgnoreProperties("subjects") // Prevents infinite recursion during JSON serialization
     private Course course;
 }

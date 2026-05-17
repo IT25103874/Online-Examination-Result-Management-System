@@ -15,14 +15,14 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public Question addQuestion(Question question) {
-        // ප්‍රශ්නය සහ පිළිතුරු (Options) එකිනෙකට සම්බන්ධ කිරීම
+
         if (question.getOptions() != null) {
             question.getOptions().forEach(option -> option.setQuestion(question));
         }
         return questionRepository.save(question);
     }
 
-    // QuestionServiceImpl.java තුළ
+
     @Override
     public Question updateQuestion(Integer id, Question questionDetails) {
         Question existingQuestion = questionRepository.findById(id)

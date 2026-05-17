@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.time.LocalDate;
 
-@Entity
+@Entity(name = "LegacyExam")
 @Table(name = "exam")
 @Data @NoArgsConstructor @AllArgsConstructor
 public class Exam {
