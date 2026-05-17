@@ -1,9 +1,8 @@
 package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.controller;
 
-import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.entity.Subject;
-import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.service.SubjectService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.Subject;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.SubjectRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,56 +10,29 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/subjects")
+@RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class SubjectController {
 
-    private final SubjectService subjectService;
+    private final SubjectRepository subjectRepository;
 
-    @Autowired
-    public SubjectController(SubjectService subjectService) {
-        this.subjectService = subjectService;
+    @PostMapping("/add")
+    public ResponseEntity<Subject> addSubject(@RequestBody Subject subject) {
+
+        return ResponseEntity.ok(subjectRepository.save(subject));
     }
 
-    // CREATE: Add a subject to a specific course
-    @PostMapping("/course/{courseId}")
-    public ResponseEntity<Subject> createSubject(@PathVariable Long courseId, @RequestBody Subject subject) {
-        Subject createdSubject = subjectService.createSubject(courseId, subject);
-        return new ResponseEntity<>(createdSubject, HttpStatus.CREATED);
-    }
 
-    // READ: Get all subjects
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<Subject>> getAllSubjects() {
-        return ResponseEntity.ok(subjectService.getAllSubjects());
+        return ResponseEntity.ok(subjectRepository.findAll());
     }
 
-    // READ: Get subject by ID
+
     @GetMapping("/{id}")
-    public ResponseEntity<Subject> getSubjectById(@PathVariable Long id) {
-        return ResponseEntity.ok(subjectService.getSubjectById(id));
-    }
-
-    // READ: Get subject by Subject Code
-    @GetMapping("/code/{subjectCode}")
-    public ResponseEntity<Subject> getSubjectByCode(@PathVariable String subjectCode) {
-        return ResponseEntity.ok(subjectService.getSubjectByCode(subjectCode));
-    }
-
-    // READ: Get all subjects belonging to a specific course
-    @GetMapping("/course/{courseId}")
-    public ResponseEntity<List<Subject>> getSubjectsByCourseId(@PathVariable Long courseId) {
-        return ResponseEntity.ok(subjectService.getSubjectsByCourseId(courseId));
-    }
-
-    // UPDATE: Update an existing subject
-    @PutMapping("/{id}")
-    public ResponseEntity<Subject> updateSubject(@PathVariable Long id, @RequestBody Subject subjectDetails) {
-        return ResponseEntity.ok(subjectService.updateSubject(id, subjectDetails));
-    }
-
-    // DELETE: Delete a subject
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteSubject(@PathVariable Long id) {
-        subjectService.deleteSubject(id);
-        return ResponseEntity.ok("Subject deleted successfully.");
+    public ResponseEntity<Subject> getSubjectById(@PathVariable Integer id) {
+        return subjectRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }

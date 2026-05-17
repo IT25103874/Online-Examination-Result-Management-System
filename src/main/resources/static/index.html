@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>EduAssess Pro - Authentication Portal</title>
+    <link rel="icon" href="data:,">
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .bg-auth-pattern {
+            background-image: linear-gradient(rgba(243, 244, 246, 0.9), rgba(243, 244, 246, 0.95)), url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        /* Transition utility for view switching */
+        .view-container {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .view-hidden {
+            opacity: 0;
+            pointer-events: none;
+            position: absolute;
+            transform: translateY(10px);
+            visibility: hidden;
+            z-index: -1;
+        }
+        .view-active {
+            opacity: 1;
+            pointer-events: auto;
+            position: relative;
+            transform: translateY(0);
+            visibility: visible;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4 bg-auth-pattern">
+
+<main class="w-full max-w-md relative">
+    
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-black text-blue-900 mb-2">EduAssess Pro</h1>
+        <p class="text-gray-600">Secure Examination Systems</p>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 relative min-h-[400px]">
+        
+        <!-- Global Alert Box -->
+        <div id="globalAlert" class="hidden mx-8 mt-8 mb-2 p-4 rounded-lg text-sm font-medium text-center"></div>
+
+        <!-- ==================== LOGIN VIEW ==================== -->
+        <div id="view-login" class="view-container view-active p-8 w-full h-full">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Welcome Back</h2>
+
+            <form id="loginForm" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email or Roll Number</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                            <span class="material-symbols-outlined text-[20px]">person</span>
+                        </span>
+                        <input id="loginEmail" type="text" required class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors" placeholder="user@institution.edu">
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-sm font-medium text-gray-700">Password</label>
+                        <button type="button" onclick="switchView('view-forgot')" class="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline">Forgot password?</button>
+                    </div>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                            <span class="material-symbols-outlined text-[20px]">lock</span>
+                        </span>
+                        <input id="loginPassword" type="password" required class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors" placeholder="••••••••">
+                        <button type="button" onclick="togglePassword('loginPassword', this)" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
+                            <span class="material-symbols-outlined text-[20px]">visibility</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center">
+                    <input id="rememberMe" type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <label for="rememberMe" class="ml-2 block text-sm text-gray-700">Remember me</label>
+                </div>
+
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors flex justify-center items-center gap-2 mt-6">
+                    <span>Sign In</span>
+                    <span class="material-symbols-outlined text-[20px]">login</span>
+                </button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-600">Don't have an account? <button type="button" onclick="switchView('view-register')" class="font-bold text-blue-600 hover:text-blue-800 hover:underline">Register Now</button></p>
+            </div>
+        </div>
+
+        <!-- ==================== REGISTER VIEW ==================== -->
+        <div id="view-register" class="view-container view-hidden p-8 w-full h-full">
+            <div class="flex items-center mb-6">
+                <button type="button" onclick="switchView('view-login')" class="mr-3 text-gray-400 hover:text-gray-800 transition-colors">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                </button>
+                <h2 class="text-2xl font-bold text-gray-800">Create Account</h2>
+            </div>
+
+            <form id="registerForm" class="space-y-4">
+                
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">Full Name</label>
+                    <div class="relative" id="wrap-regName">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 flex items-center text-gray-400 transition-colors" id="icon-regName">
+                            <span class="material-symbols-outlined text-[20px]">person</span>
+                        </span>
+                        <input id="regName" type="text" required class="w-full h-14 pl-12 pr-14 text-sm border border-slate-300 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition-all duration-200" placeholder="John Doe">
+                        <span class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none hidden" id="status-regName">
+                            <i data-lucide="check" class="w-4 h-4 text-emerald-400 opacity-60"></i>
+                        </span>
+                    </div>
+                    <p id="err-regName" class="text-[11px] mt-1.5 font-medium transition-colors hidden"></p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">Email Address</label>
+                    <div class="relative" id="wrap-regEmail">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 flex items-center text-gray-400 transition-colors" id="icon-regEmail">
+                            <span class="material-symbols-outlined text-[20px]">mail</span>
+                        </span>
+                        <input id="regEmail" type="email" required class="w-full h-14 pl-12 pr-14 text-sm border border-slate-300 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition-all duration-200" placeholder="student@university.edu">
+                        <span class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none hidden" id="status-regEmail">
+                            <i data-lucide="check" class="w-4 h-4 text-emerald-400 opacity-60"></i>
+                        </span>
+                    </div>
+                    <p id="err-regEmail" class="text-[11px] mt-1.5 font-medium transition-colors hidden"></p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Phone</label>
+                        <div class="relative" id="wrap-regPhone">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 flex items-center text-gray-400 transition-colors" id="icon-regPhone">
+                                <span class="material-symbols-outlined text-[20px]">phone</span>
+                            </span>
+                            <input id="regPhone" type="tel" required class="w-full h-14 pl-12 pr-14 text-sm border border-slate-300 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition-all duration-200" placeholder="071 234 5678">
+                            <span class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none hidden" id="status-regPhone">
+                                <i data-lucide="check" class="w-4 h-4 text-emerald-400 opacity-60"></i>
+                            </span>
+                        </div>
+                        <p id="err-regPhone" class="text-[11px] mt-1.5 font-medium transition-colors hidden"></p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">DOB</label>
+                        <div class="relative" id="wrap-regDob">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 flex items-center text-gray-400 transition-colors" id="icon-regDob">
+                                <span class="material-symbols-outlined text-[20px]">calendar_today</span>
+                            </span>
+                            <input id="regDob" type="text" required class="w-full h-14 pl-12 pr-14 text-sm border border-slate-300 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition-all duration-200" placeholder="Select date">
+                        </div>
+                        <p id="err-regDob" class="text-[11px] mt-1.5 font-medium transition-colors hidden"></p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">Course Program</label>
+                    <div class="relative" id="wrap-regCourse">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 flex items-center text-gray-400 transition-colors" id="icon-regCourse">
+                            <span class="material-symbols-outlined text-[20px]">school</span>
+                        </span>
+                        <select id="regCourse" required class="w-full h-14 pl-12 pr-14 text-sm border border-slate-300 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none appearance-none transition-all duration-200">
+                            <option value="" disabled selected>Select program</option>
+                            <option value="IT">Information Technology</option>
+                            <option value="BM">Business Management</option>
+                        </select>
+                        <span class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400" id="arrow-regCourse">
+                            <span class="material-symbols-outlined text-[20px]">expand_more</span>
+                        </span>
+                    </div>
+                    <p id="err-regCourse" class="text-[11px] mt-1.5 font-medium transition-colors hidden"></p>
+                </div>
+
+                <button type="submit" id="regSubmitBtn" disabled class="w-full bg-blue-600 text-white font-bold py-2.5 px-4 rounded-lg transition-all flex justify-center items-center gap-2 mt-4 opacity-50 cursor-not-allowed">
+                    <span>Complete Registration</span>
+                    <span class="material-symbols-outlined text-[18px]">how_to_reg</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- ==================== FORGOT PASSWORD VIEW ==================== -->
+        <div id="view-forgot" class="view-container view-hidden p-8 w-full h-full">
+            <div class="flex items-center justify-center w-12 h-12 bg-blue-50 text-blue-600 rounded-full mb-4 mx-auto">
+                <span class="material-symbols-outlined text-[24px]">lock_reset</span>
+            </div>
+
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">Forgot Password?</h2>
+            <p class="text-sm text-center text-gray-500 mb-6">No worries, we'll send you reset instructions. Please enter your email address.</p>
+
+            <form id="forgotPasswordForm" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                            <span class="material-symbols-outlined text-[20px]">mail</span>
+                        </span>
+                        <input id="forgotEmail" type="email" required class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="j.doe@institution.edu">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors flex justify-center items-center gap-2">
+                    <span>Send Reset Link</span>
+                    <span class="material-symbols-outlined text-[20px]">send</span>
+                </button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <button type="button" onclick="switchView('view-login')" class="inline-flex items-center gap-1 text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors">
+                    <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+                    Back to log in
+                </button>
+            </div>
+        </div>
+
+        <!-- ==================== RESET PASSWORD VIEW ==================== -->
+        <div id="view-reset" class="view-container view-hidden p-8 w-full h-full">
+            <div class="flex items-center justify-center w-12 h-12 bg-green-50 text-green-600 rounded-full mb-4 mx-auto">
+                <span class="material-symbols-outlined text-[24px]">key</span>
+            </div>
+
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">Set New Password</h2>
+            <p class="text-sm text-center text-gray-500 mb-6" id="resetSubtitle">Please create a new password that you don't use on any other site.</p>
+
+            <form id="resetPasswordForm" class="space-y-5">
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                            <span class="material-symbols-outlined text-[20px]">lock</span>
+                        </span>
+                        <input id="resetPass" type="password" required class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="••••••••">
+                        <button type="button" onclick="togglePassword('resetPass', this)" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
+                            <span class="material-symbols-outlined text-[20px]">visibility</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                            <span class="material-symbols-outlined text-[20px]">lock</span>
+                        </span>
+                        <input id="resetConfirmPass" type="password" required class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="••••••••">
+                        <button type="button" onclick="togglePassword('resetConfirmPass', this)" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
+                            <span class="material-symbols-outlined text-[20px]">visibility</span>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors flex justify-center items-center gap-2">
+                    <span>Reset Password</span>
+                    <span class="material-symbols-outlined text-[20px]">check_circle</span>
+                </button>
+            </form>
+            
+            <div class="mt-6 text-center">
+                <button type="button" onclick="switchView('view-login')" class="inline-flex items-center gap-1 text-sm font-bold text-gray-500 hover:text-gray-800 transition-colors">
+                    Cancel
+                </button>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+    // --- UI State Management ---
+    function switchView(viewId) {
+        // Hide global alert
+        hideAlert();
+        
+        // Hide all views
+        document.querySelectorAll('.view-container').forEach(el => {
+            el.classList.remove('view-active');
+            el.classList.add('view-hidden');
+        });
+        
+        // Show target view
+        document.getElementById(viewId).classList.remove('view-hidden');
+        document.getElementById(viewId).classList.add('view-active');
+    }
+
+    function togglePassword(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const icon = btn.querySelector('.material-symbols-outlined');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.textContent = 'visibility_off';
+        } else {
+            input.type = 'password';
+            icon.textContent = 'visibility';
+        }
+    }
+
+    // --- Alert Management ---
+    const alertBox = document.getElementById('globalAlert');
+    function showAlert(msg, isSuccess = false) {
+        alertBox.textContent = msg;
+        alertBox.className = `mx-8 mt-8 mb-2 p-4 rounded-lg text-sm font-medium text-center ${isSuccess ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
+        alertBox.classList.remove('hidden');
+    }
+    function hideAlert() {
+        alertBox.classList.add('hidden');
+    }
+
+    // --- Login Logic ---
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideAlert();
+
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        const btn = e.target.querySelector('button[type="submit"]');
+        const originalHtml = btn.innerHTML;
+        
+        btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px]">sync</span><span>Signing In...</span>';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            if (response.ok) {
+                const user = await response.json();
+                localStorage.setItem('user', JSON.stringify(user));
+                
+                // Route based on role
+                if (user.role === 'ADMIN') {
+                    window.location.href = '/admin-dashboard.html';
+                } else if (user.role === 'TEACHER' || user.role === 'LECTURER') {
+                    window.location.href = '/lecturer-dashboard.html';
+                } else {
+                    window.location.href = '/student-dashboard.html';
+                }
+            } else {
+                const err = await response.text();
+                showAlert(err || 'Invalid credentials.');
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showAlert('Network error. Ensure backend is running.');
+            btn.innerHTML = originalHtml;
+            btn.disabled = false;
+        }
+    });
+
+    // --- Register Logic ---
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideAlert();
+
+        const btn = e.target.querySelector('button[type="submit"]');
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[18px]">sync</span><span>Creating Account...</span>';
+        btn.disabled = true;
+
+        const payload = {
+            name: document.getElementById('regName').value,
+            email: document.getElementById('regEmail').value,
+            phone: document.getElementById('regPhone').value,
+            dateOfBirth: document.getElementById('regDob').value,
+            courseId: document.getElementById('regCourse').value
+        };
+
+        try {
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                btn.innerHTML = '<span class="material-symbols-outlined text-[18px] text-white">check_circle</span><span>Registration Submitted Successfully</span>';
+                btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                btn.classList.add('bg-green-600');
+                
+                let count = 3;
+                showAlert(`Success! Redirecting to login in ${count}...`, true);
+                
+                const interval = setInterval(() => {
+                    count--;
+                    if(count > 0) {
+                        showAlert(`Success! Redirecting to login in ${count}...`, true);
+                    } else {
+                        clearInterval(interval);
+                        switchView('view-login');
+                        e.target.reset(); // clear form
+                        btn.innerHTML = originalHtml;
+                        btn.disabled = true; // Disabled because form is reset
+                        btn.classList.add('bg-blue-600', 'hover:bg-blue-700', 'opacity-50', 'cursor-not-allowed');
+                        btn.classList.remove('bg-green-600');
+                        Object.keys(regState).forEach(k => regState[k] = false);
+                        document.querySelectorAll('[id^=err-reg]').forEach(el => {
+                            el.textContent = '';
+                            el.classList.add('hidden');
+                        });
+                        document.querySelectorAll('[id^=icon-reg]').forEach(el => {
+                            el.classList.remove('text-green-500', 'text-red-500');
+                            el.classList.add('text-gray-400');
+                        });
+                        document.querySelectorAll('[id^=status-reg]').forEach(el => {
+                            el.classList.add('hidden');
+                        });
+                        document.querySelectorAll('input, select').forEach(el => {
+                            el.classList.remove('border-red-500', 'focus:ring-red-500');
+                            el.classList.add('border-slate-300', 'focus:ring-blue-500');
+                        });
+                    }
+                }, 1000);
+            } else {
+                const err = await response.text();
+                showAlert(err || 'Registration failed.');
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showAlert('Network error occurred.');
+            btn.innerHTML = originalHtml;
+            btn.disabled = false;
+        }
+    });
+
+    // --- Forgot Password Logic ---
+    let resetEmailTarget = '';
+    document.getElementById('forgotPasswordForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        hideAlert();
+
+        const email = document.getElementById('forgotEmail').value;
+        const btn = e.target.querySelector('button[type="submit"]');
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px]">sync</span><span>Sending...</span>';
+        btn.disabled = true;
+
+        // Simulated Backend Call
+        setTimeout(() => {
+            btn.innerHTML = originalHtml;
+            btn.disabled = false;
+            
+            // Advance to reset password UI for demo purposes
+            resetEmailTarget = email;
+            document.getElementById('resetSubtitle').textContent = `Setting new password for ${email}`;
+            switchView('view-reset');
+            showAlert(`If ${email} is registered, a reset link has been verified.`, true);
+        }, 1200);
+    });
+
+    // --- Reset Password Logic ---
+    document.getElementById('resetPasswordForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        hideAlert();
+
+        const pass = document.getElementById('resetPass').value;
+        const conf = document.getElementById('resetConfirmPass').value;
+        
+        if (pass !== conf) {
+            showAlert('Passwords do not match!');
+            return;
+        }
+
+        const btn = e.target.querySelector('button[type="submit"]');
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px]">sync</span><span>Resetting...</span>';
+        btn.disabled = true;
+
+        // Simulated Backend Call
+        setTimeout(() => {
+            btn.innerHTML = originalHtml;
+            btn.disabled = false;
+            e.target.reset();
+            
+            switchView('view-login');
+            showAlert('Password reset successfully! Please log in.', true);
+        }, 1200);
+    });
+
+    // Check if user is already logged in
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+        try {
+            const user = JSON.parse(userStr);
+            if (user.role === 'ADMIN') window.location.href = '/admin-dashboard.html';
+            else if (user.role === 'TEACHER' || user.role === 'LECTURER') window.location.href = '/lecturer-dashboard.html';
+            else window.location.href = '/student-dashboard.html';
+        } catch(e) {}
+    }
+
+    // --- Real-time Validation System ---
+    const regState = {
+        regName: false,
+        regEmail: false,
+        regPhone: false,
+        regDob: false,
+        regCourse: false
+    };
+
+    function updateFieldStatus(id, isValid, msg) {
+        const input = document.getElementById(id);
+        const icon = document.getElementById(`icon-${id}`);
+        const err = document.getElementById(`err-${id}`);
+        const status = document.getElementById(`status-${id}`);
+        
+        regState[id] = isValid;
+
+        if (isValid) {
+            input.classList.remove('border-red-500', 'focus:ring-red-500');
+            input.classList.add('border-slate-300', 'focus:ring-blue-500');
+            if(icon) {
+                icon.classList.remove('text-red-500');
+                icon.classList.add('text-gray-400');
+            }
+            if(err) {
+                err.textContent = '';
+                err.classList.remove('text-red-500');
+                err.classList.add('hidden');
+            }
+            if(status) {
+                status.classList.remove('hidden');
+            }
+        } else {
+            input.classList.remove('border-slate-300', 'focus:ring-blue-500');
+            input.classList.add('border-red-500', 'focus:ring-red-500');
+            if(icon) {
+                icon.classList.remove('text-gray-400');
+                icon.classList.add('text-red-500');
+            }
+            if(err) {
+                err.textContent = msg;
+                err.classList.remove('hidden');
+                err.classList.add('text-red-500');
+            }
+            if(status) {
+                status.classList.add('hidden');
+            }
+        }
+        if(window.lucide) window.lucide.createIcons();
+        checkFormValidity();
+    }
+
+    function checkFormValidity() {
+        const isValid = regState.regName && regState.regEmail && regState.regPhone && regState.regDob && regState.regCourse;
+        console.log({
+            nameValid: regState.regName,
+            emailValid: regState.regEmail,
+            phoneValid: regState.regPhone,
+            dobValid: regState.regDob,
+            courseValid: regState.regCourse
+        });
+        const btn = document.getElementById('regSubmitBtn');
+        if (isValid) {
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            btn.classList.add('hover:bg-blue-700');
+        } else {
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            btn.classList.remove('hover:bg-blue-700');
+        }
+    }
+
+    // Name Validation
+    document.getElementById('regName').addEventListener('input', (e) => {
+        const val = e.target.value;
+        if (val.length < 3) {
+            updateFieldStatus('regName', false, 'Name must be at least 3 characters');
+        } else if (!/^[A-Za-z\s]+$/.test(val)) {
+            updateFieldStatus('regName', false, 'Name must contain only letters and spaces');
+        } else {
+            updateFieldStatus('regName', true);
+        }
+    });
+
+    // Email Validation
+    document.getElementById('regEmail').addEventListener('input', (e) => {
+        const val = e.target.value;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(val)) {
+            updateFieldStatus('regEmail', false, 'Please enter a valid email address');
+        } else {
+            updateFieldStatus('regEmail', true);
+        }
+    });
+
+    // Phone Validation & Formatting
+    document.getElementById('regPhone').addEventListener('input', (e) => {
+        let val = e.target.value.replace(/[^\d+]/g, '');
+        // auto format
+        if(val.startsWith('07') && val.length > 3) {
+            val = val.substring(0,3) + ' ' + val.substring(3,6) + (val.length > 6 ? ' ' + val.substring(6,10) : val.substring(6));
+        } else if(val.startsWith('947') && val.length > 3) {
+             val = '+' + val.substring(0,2) + ' ' + val.substring(2,5) + ' ' + val.substring(5,8) + (val.length > 8 ? ' ' + val.substring(8,12) : val.substring(8));
+        }
+        e.target.value = val;
+
+        const stripped = val.replace(/\s/g, '');
+        if (/^(07\d{8}|\+947\d{8})$/.test(stripped)) {
+            updateFieldStatus('regPhone', true);
+        } else {
+            updateFieldStatus('regPhone', false, 'Enter a valid Sri Lankan mobile number');
+        }
+    });
+
+    // DOB Validation Setup
+    const dobInput = document.getElementById('regDob');
+    const today = new Date();
+    const minAgeDate = new Date(today.getFullYear() - 16, today.getMonth(), today.getDate()).toISOString().split('T')[0];
+    const maxAgeDate = new Date(today.getFullYear() - 80, today.getMonth(), today.getDate()).toISOString().split('T')[0];
+    
+    flatpickr(dobInput, {
+        dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "F j, Y",
+        disableMobile: true,
+        maxDate: minAgeDate,
+        minDate: maxAgeDate,
+        onChange: function(selectedDates, dateStr, instance) {
+            if(!dateStr) {
+                updateFieldStatus('regDob', false, 'Date of birth is required');
+                return;
+            }
+            const selected = new Date(dateStr);
+            const minValid = new Date(maxAgeDate);
+            const maxValid = new Date(minAgeDate);
+
+            if (selected > maxValid) {
+                updateFieldStatus('regDob', false, 'Student must be at least 16 years old');
+            } else if (selected < minValid) {
+                updateFieldStatus('regDob', false, 'Date exceeds maximum allowed age');
+            } else {
+                updateFieldStatus('regDob', true);
+            }
+        }
+    });
+
+    // Course Validation
+    document.getElementById('regCourse').addEventListener('change', (e) => {
+        const val = e.target.value;
+        if (val) {
+            updateFieldStatus('regCourse', true);
+        } else {
+            updateFieldStatus('regCourse', false, 'Please select a course program');
+        }
+    });
+
+</script>
+</body>
+</html>
