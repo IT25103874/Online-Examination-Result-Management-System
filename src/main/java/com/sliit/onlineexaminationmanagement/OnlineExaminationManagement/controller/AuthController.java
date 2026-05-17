@@ -3,6 +3,8 @@ package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.contro
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.dto.LoginRequest;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.dto.RegisterRequest;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.service.AuthService;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.dto.UpdateProfileRequest;
+import org.springframework.web.bind.annotation.PutMapping;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,5 +27,16 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.loginUser(request));
+    }
+
+    @PutMapping("/update-profile/{userId}")
+    public ResponseEntity<String> updateProfile(
+            @org.springframework.web.bind.annotation.PathVariable Integer userId,
+            @RequestBody UpdateProfileRequest request
+    ) {
+
+        String result = authService.updateProfile(userId, request);
+
+        return ResponseEntity.ok(result);
     }
 }

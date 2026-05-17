@@ -3,12 +3,14 @@ package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.servic
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.dto.*;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.Student;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.User;
-// Add these two missing imports
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.Teacher;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.TeacherRepository;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.StudentRepository;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.UserRepository;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class AuthService {
@@ -28,9 +30,20 @@ public class AuthService {
         this.teacherRepository = teacherRepository;
     }
 
+    // ── REGISTER ──────────────────────────────────────────────────────────────
     public String registerStudent(RegisterRequest request) {
+
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already registered");
+            User existing = userRepository.findByEmail(request.getEmail())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            if (existing.getStatus().equals("REJECTED")) {
+                studentRepository.findByUser_UserId(existing.getUserId())
+                        .ifPresent(studentRepository::delete);
+                userRepository.delete(existing);
+            } else {
+                throw new RuntimeException("Email already registered");
+            }
         }
 
         User user = new User();
@@ -51,40 +64,70 @@ public class AuthService {
         return "Registration submitted successfully.";
     }
 
+    // ── LOGIN ─────────────────────────────────────────────────────────────────
     public LoginResponse loginUser(LoginRequest request) {
 
         User user;
+        Student student = null;
 
-        // try find by email first
         if (userRepository.existsByEmail(request.getEmail())) {
+
             user = userRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found"));
+
+            if(user.getRole().equals("STUDENT")) {
+
+                student = studentRepository
+                        .findByUser_UserId(user.getUserId())
+                        .orElse(null);
+            }
+
         } else {
-            // try find by roll number
-            Student student = studentRepository.findByRollNumber(request.getEmail())
+
+            student = studentRepository.findByRollNumber(request.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found"));
+
             user = student.getUser();
         }
 
         if (!user.getStatus().equals("ACTIVE")) {
-            throw new RuntimeException("Account is not active yet");
+            throw new RuntimeException("Account is not active. Contact admin.");
         }
 
         if (!request.getPassword().equals(user.getPassword())) {
             throw new RuntimeException("Invalid password");
         }
 
+        // CHANGE 1: track last login time — used for 7-day never-logged-in check
+        user.setLastLoginAt(LocalDateTime.now());
+        userRepository.save(user);
+
         return new LoginResponse(
+
                 user.getUserId(),
+
                 user.getName(),
+
                 user.getEmail(),
+
                 user.getRole(),
-                user.getStatus()
+
+                user.getStatus(),
+
+                student != null ? student.getPhone() : null,
+
+                student != null ? student.getCourseId() : null,
+
+                student != null && student.getDateOfBirth() != null
+                        ? student.getDateOfBirth().toString()
+                        : null,
+
+                student != null ? student.getRollNumber() : null
         );
     }
 
+    // ── APPROVE ───────────────────────────────────────────────────────────────
     public String approveStudent(Integer userId) {
-        // find user
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -92,50 +135,113 @@ public class AuthService {
             throw new RuntimeException("User is not pending");
         }
 
-        // find student
         Student student = studentRepository.findByUser_UserId(userId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
-        // generate roll number based on course
         String rollNumber = generateRollNumber(student.getCourseId());
-
-        // generate random password
         String rawPassword = generatePassword();
 
-        // update student
         student.setRollNumber(rollNumber);
         studentRepository.save(student);
 
-        // update user
         user.setPassword(rawPassword);
         user.setStatus("ACTIVE");
+        // CHANGE 2: save when credentials were sent — starts 7-day clock
+        user.setCredentialsSentAt(LocalDateTime.now());
         userRepository.save(user);
 
-        // send email
         emailService.sendApprovalEmail(user.getEmail(), user.getName(), rollNumber, rawPassword);
 
         return "Student approved successfully. Email sent to " + user.getEmail();
     }
 
+    // ── REJECT ────────────────────────────────────────────────────────────────
+    public String rejectStudent(Integer userId, String reason) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!user.getRole().equals("STUDENT")) {
+            throw new RuntimeException("User is not a student");
+        }
+        if (!user.getStatus().equals("PENDING")) {
+            throw new RuntimeException("Only PENDING students can be rejected");
+        }
+
+        user.setStatus("REJECTED");
+        user.setRejectionReason(reason);
+        userRepository.save(user);
+
+        emailService.sendRejectionEmail(user.getEmail(), user.getName(), reason);
+
+        return "Student rejected. Email sent to " + user.getEmail();
+    }
+
+    // ── RULE 1: admin views users who never logged in after 7 days ────────────
+    public List<User> getNeverLoggedInUsers() {
+        LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
+        return userRepository
+                .findByStatusAndLastLoginAtIsNullAndCredentialsSentAtBefore(
+                        "ACTIVE", sevenDaysAgo);
+    }
+
+    // ── RULE 2a: admin manually DEACTIVATES — reason required ─────────────────
+    public String deactivateUser(Integer userId, String reason) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!user.getStatus().equals("ACTIVE")) {
+            throw new RuntimeException("User is not ACTIVE. Current status: " + user.getStatus());
+        }
+        if (reason == null || reason.trim().isEmpty()) {
+            throw new RuntimeException("Reason is required when deactivating");
+        }
+
+        user.setStatus("INACTIVE");
+        user.setDeactivationReason(reason);
+        userRepository.save(user);
+
+        emailService.sendDeactivationEmail(user.getEmail(), user.getName(), reason);
+
+        return "User deactivated. Email sent to " + user.getEmail();
+    }
+
+    // ── RULE 2b: admin manually REACTIVATES ───────────────────────────────────
+    public String reactivateUser(Integer userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!user.getStatus().equals("INACTIVE")) {
+            throw new RuntimeException("User is not INACTIVE. Current status: " + user.getStatus());
+        }
+
+        user.setStatus("ACTIVE");
+        user.setDeactivationReason(null);
+        userRepository.save(user);
+
+        emailService.sendReactivationEmail(user.getEmail(), user.getName());
+
+        return "User reactivated. Email sent to " + user.getEmail();
+    }
+
+    // ── CREATE LECTURER ───────────────────────────────────────────────────────
     public String createLecturer(CreateLecturerRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
 
-        // generate password
         String rawPassword = generatePassword();
 
-        // save to users table
         User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setPassword(rawPassword);
         user.setRole("LECTURER");
         user.setStatus("ACTIVE");
+        // CHANGE 3: save when credentials were sent — starts 7-day clock
+        user.setCredentialsSentAt(LocalDateTime.now());
         userRepository.save(user);
 
-        // save to teacher table
         Teacher teacher = new Teacher();
         teacher.setPhone(request.getPhone());
         teacher.setDepartment(request.getDepartment());
@@ -143,12 +249,12 @@ public class AuthService {
         teacher.setUser(user);
         teacherRepository.save(teacher);
 
-        // send email
         emailService.sendLecturerCredentials(request.getEmail(), request.getName(), rawPassword);
 
         return "Lecturer created successfully. Email sent to " + request.getEmail();
     }
 
+    // ── UPDATE PROFILE ────────────────────────────────────────────────────────
     public String updateProfile(Integer userId, UpdateProfileRequest request) {
 
         User user = userRepository.findById(userId)
@@ -157,7 +263,6 @@ public class AuthService {
         user.setName(request.getName());
         userRepository.save(user);
 
-        // update phone in student or teacher table
         if (user.getRole().equals("STUDENT")) {
             studentRepository.findByUser_UserId(userId).ifPresent(student -> {
                 student.setPhone(request.getPhone());
@@ -174,11 +279,25 @@ public class AuthService {
     }
 
     private String generateRollNumber(String courseId) {
+
         String year = String.valueOf(java.time.Year.now().getValue()).substring(2);
-        String prefix = courseId.toUpperCase().startsWith("IT") ? "IT" : "BM";
-        long count = studentRepository.countByCourseId(courseId) + 1;
-        String sequence = String.format("%04d", count);
-        return prefix + year + sequence;
+
+        String prefix =
+                courseId.toUpperCase().startsWith("IT")
+                        ? "IT"
+                        : "BM";
+
+        String rollNumber;
+
+        do {
+
+            int random = 1000 + new java.util.Random().nextInt(9000);
+
+            rollNumber = prefix + year + random;
+
+        } while(studentRepository.findByRollNumber(rollNumber).isPresent());
+
+        return rollNumber;
     }
 
     private String generatePassword() {

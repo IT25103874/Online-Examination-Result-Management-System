@@ -11,4 +11,8 @@ public class LoginResponse {
     private String email;
     private String role;
     private String status;
+    private String phone;
+    private String courseId;
+    private String dateOfBirth;
+    private String rollNumber;
 }

@@ -29,4 +29,16 @@ public class User {
 
     @Column(name = "status", length = 25)
     private String status; // "PENDING"
+
+    @Column(name = "rejection_reason", length = 255)
+    private String rejectionReason; // filled when admin rejects
+
+    @Column(name = "credentials_sent_at")
+    private java.time.LocalDateTime credentialsSentAt;
+
+    @Column(name = "last_login_at")
+    private java.time.LocalDateTime lastLoginAt;
+
+    @Column(name = "deactivation_reason", length = 255)
+    private String deactivationReason;
 }
