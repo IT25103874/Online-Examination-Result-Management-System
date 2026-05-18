@@ -47,7 +47,7 @@
         
         <!-- Main Nav Items -->
         <nav class="space-y-1 flex-grow">
-            <a class="flex items-center space-x-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg transition-all" href="/admin-dashboard.html">
+            <a class="flex items-center space-x-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg transition-all" href="/pages/admin-dashboard.html">
                 <span class="material-symbols-outlined">dashboard</span>
                 <span class="text-sm font-semibold">Dashboard</span>
             </a>
@@ -237,9 +237,6 @@
 
     users.forEach(user => {
 
-        // Supports BOTH user_id and id
-        console.log(user);
-
         const uid =
             user.user_id ||
             user.id ||
@@ -248,65 +245,83 @@
             user.uid;
 
         const tr = document.createElement('tr');
-        tr.className = 'border-b user-row';
+        tr.className = 'border-b user-row hover:bg-slate-50/40 transition-colors duration-150';
 
         let actionButtons = '';
+        let statusBadge = '';
 
-        if (user.status === 'PENDING') {
-
-            actionButtons += `
-                <button onclick="approveUser(${uid})"
-                    class="bg-green-600 text-white px-4 py-1.5 text-xs font-bold rounded-lg mr-2 hover:bg-green-700 transition-colors shadow-sm">
-                    Approve
-                </button>
-            `;
-
-            actionButtons += `
-                <button onclick="rejectUser(${uid})"
-                    class="bg-white border border-red-500 text-red-600 px-4 py-1.5 text-xs font-bold rounded-lg hover:bg-red-50 transition-colors shadow-sm">
-                    Reject
-                </button>
-            `;
-
-        } else if (user.status === 'ACTIVE') {
-
-            actionButtons += `
-                <button onclick="deactivateUser(${uid})"
-                    class="bg-amber-500 text-white px-4 py-1.5 text-xs font-bold rounded-lg mr-2 hover:bg-amber-600 transition-colors shadow-sm">
-                    Deactivate
-                </button>
-            `;
-
-            actionButtons += `
-                <button onclick="deleteUser(${uid})"
-                    class="bg-white border border-red-500 text-red-600 px-4 py-1.5 text-xs font-bold rounded-lg hover:bg-red-50 transition-colors shadow-sm">
-                    Delete
-                </button>
-            `;
-
+        // Status badge styling matching lock system UI
+        if (user.status === 'ACTIVE') {
+            statusBadge = `<span class="px-2.5 py-1 bg-green-50 text-green-700 text-xs font-bold rounded-full border border-green-200 shadow-sm">ACTIVE</span>`;
+        } else if (user.status === 'PENDING') {
+            statusBadge = `<span class="px-2.5 py-1 bg-amber-50 text-amber-700 text-xs font-bold rounded-full border border-amber-200 shadow-sm animate-pulse">PENDING</span>`;
+        } else if (user.status === 'REJECTED') {
+            statusBadge = `<span class="px-2.5 py-1 bg-rose-50 text-rose-700 text-xs font-bold rounded-full border border-rose-200 shadow-sm">REJECTED</span>`;
         } else {
+            statusBadge = `<span class="px-2.5 py-1 bg-red-50 text-red-700 text-xs font-bold rounded-full border border-red-200 shadow-sm">${user.status}</span>`;
+        }
 
-            actionButtons += `
-                <button onclick="reactivateUser(${uid})"
-                    class="bg-blue-600 text-white px-4 py-1.5 text-xs font-bold rounded-lg mr-2 hover:bg-blue-700 transition-colors shadow-sm">
-                    Reactivate
-                </button>
+        // Action buttons with strict ADMIN controls protection
+        if (user.role === 'ADMIN') {
+            actionButtons = `
+                <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-100 shadow-sm select-none">
+                    <span class="material-symbols-outlined text-[14px]">shield</span> Protected Account
+                </span>
             `;
+        } else {
+            if (user.status === 'PENDING') {
+                actionButtons += `
+                    <button onclick="approveUser(${uid})"
+                        class="bg-green-600 text-white px-4 py-1.5 text-xs font-bold rounded-lg mr-2 hover:bg-green-700 transition-all duration-150 shadow-sm hover:shadow">
+                        Approve
+                    </button>
+                `;
 
-            actionButtons += `
-                <button onclick="deleteUser(${uid})"
-                    class="bg-white border border-red-500 text-red-600 px-4 py-1.5 text-xs font-bold rounded-lg hover:bg-red-50 transition-colors shadow-sm">
-                    Delete
-                </button>
-            `;
+                actionButtons += `
+                    <button onclick="rejectUser(${uid})"
+                        class="bg-white border border-red-500 text-red-600 px-4 py-1.5 text-xs font-bold rounded-lg hover:bg-red-50 transition-all duration-150 shadow-sm">
+                        Reject
+                    </button>
+                `;
+
+            } else if (user.status === 'ACTIVE') {
+                actionButtons += `
+                    <button onclick="deactivateUser(${uid})"
+                        class="bg-amber-500 text-white px-4 py-1.5 text-xs font-bold rounded-lg mr-2 hover:bg-amber-600 transition-all duration-150 shadow-sm hover:shadow">
+                        Deactivate
+                    </button>
+                `;
+
+                actionButtons += `
+                    <button onclick="deleteUser(${uid})"
+                        class="bg-white border border-red-500 text-red-600 px-4 py-1.5 text-xs font-bold rounded-lg hover:bg-red-50 transition-all duration-150 shadow-sm">
+                        Delete
+                    </button>
+                `;
+
+            } else {
+                actionButtons += `
+                    <button onclick="reactivateUser(${uid})"
+                        class="bg-blue-600 text-white px-4 py-1.5 text-xs font-bold rounded-lg mr-2 hover:bg-blue-700 transition-all duration-150 shadow-sm hover:shadow">
+                        Reactivate
+                    </button>
+                `;
+
+                actionButtons += `
+                    <button onclick="deleteUser(${uid})"
+                        class="bg-white border border-red-500 text-red-600 px-4 py-1.5 text-xs font-bold rounded-lg hover:bg-red-50 transition-all duration-150 shadow-sm">
+                        Delete
+                    </button>
+                `;
+            }
         }
 
         tr.innerHTML = `
-            <td class="px-6 py-4 text-sm font-semibold text-slate-700">#EDU-${uid}</td>
-            <td class="px-6 py-4 text-sm text-slate-700 font-medium user-name">${user.name}</td>
-            <td class="px-6 py-4 text-sm text-slate-500">${user.email}</td>
+            <td class="px-6 py-4 text-sm font-mono font-semibold text-slate-700">#EDU-${uid}</td>
+            <td class="px-6 py-4 text-sm text-slate-800 font-bold user-name">${user.name}</td>
+            <td class="px-6 py-4 text-sm text-slate-500 font-mono">${user.email}</td>
             <td class="px-6 py-4 text-sm text-slate-700 font-semibold">${user.role}</td>
-            <td class="px-6 py-4 text-sm font-bold ${user.status === 'ACTIVE' ? 'text-green-600' : user.status === 'PENDING' ? 'text-amber-600' : 'text-red-600'}">${user.status}</td>
+            <td class="px-6 py-4 text-sm">${statusBadge}</td>
             <td class="px-6 py-4 text-right">${actionButtons}</td>
         `;
 

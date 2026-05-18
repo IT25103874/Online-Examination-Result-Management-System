@@ -79,10 +79,14 @@ public class AdminController {
     // delete user by id
     @DeleteMapping("/delete-user/{userId}")
     public ResponseEntity<String> deleteUser(@PathVariable Integer userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new RuntimeException("User not found");
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if ("ADMIN".equals(user.getRole())) {
+            throw new IllegalArgumentException("Protected Account: Administrative accounts cannot be deleted.");
         }
-        userRepository.deleteById(userId);
+
+        userRepository.delete(user);
         return ResponseEntity.ok("User deleted successfully.");
     }
 }
