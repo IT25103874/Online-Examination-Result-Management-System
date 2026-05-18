@@ -11,6 +11,7 @@ import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.T
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.TeacherRepository;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.StudentRepository;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.UserRepository;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.exception.DuplicateEmailException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -37,31 +38,64 @@ public class AuthService {
     // ── REGISTER ──────────────────────────────────────────────────────────────
     public String registerStudent(com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.DTO.RegisterRequest request) {
 
-        if (userRepository.existsByEmail(request.getEmail())) {
-            User existing = userRepository.findByEmail(request.getEmail())
+        // 1. Strict Inputs Validation
+        if (request.getName() == null || request.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Full name is required.");
+        }
+        if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
+            throw new IllegalArgumentException("Email address is required.");
+        }
+        if (!request.getEmail().contains("@")) {
+            throw new IllegalArgumentException("Please provide a valid email address.");
+        }
+        if (request.getCourseId() == null || request.getCourseId().trim().isEmpty()) {
+            throw new IllegalArgumentException("Course selection is required.");
+        }
+        if (request.getDateOfBirth() == null) {
+            throw new IllegalArgumentException("Date of birth is required.");
+        }
+        if (request.getPhone() == null || request.getPhone().trim().isEmpty()) {
+            throw new IllegalArgumentException("Mobile number is required.");
+        }
+
+        // 2. Database Constraint Sanitization (Strip non-digits and cap length at 10 to fit in DB)
+        String sanitizedPhone = request.getPhone().replaceAll("\\D", "");
+        if (sanitizedPhone.length() > 10) {
+            sanitizedPhone = sanitizedPhone.substring(sanitizedPhone.length() - 10);
+        }
+        if (sanitizedPhone.length() < 9) {
+            throw new IllegalArgumentException("Please enter a valid phone number (at least 9-10 digits).");
+        }
+
+        String normalizedEmail = request.getEmail().trim().toLowerCase();
+
+        // 3. Resilient Duplicate Email Verification
+        if (userRepository.existsByEmail(normalizedEmail)) {
+            User existing = userRepository.findByEmail(normalizedEmail)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
-            if (existing.getStatus().equals("REJECTED")) {
+            if ("REJECTED".equals(existing.getStatus())) {
                 studentRepository.findByUser_UserId(existing.getUserId())
                         .ifPresent(studentRepository::delete);
                 userRepository.delete(existing);
             } else {
-                throw new RuntimeException("Email already registered");
+                throw new DuplicateEmailException("The email address '" + request.getEmail() + "' is already registered.");
             }
         }
 
+        // 4. Persistence
         User user = new User();
-        user.setName(request.getName());
-        user.setEmail(request.getEmail());
-        user.setPassword("");
+        user.setName(request.getName().trim());
+        user.setEmail(normalizedEmail);
+        user.setPassword(""); // Encrypted/assigned later upon admin approval
         user.setRole("STUDENT");
         user.setStatus("PENDING");
         userRepository.save(user);
 
         Student student = new Student();
-        student.setCourseId(request.getCourseId());
+        student.setCourseId(request.getCourseId().trim());
         student.setDateOfBirth(request.getDateOfBirth());
-        student.setPhone(request.getPhone());
+        student.setPhone(sanitizedPhone);
         student.setUser(user);
         studentRepository.save(student);
 
@@ -94,12 +128,18 @@ public class AuthService {
             user = student.getUser();
         }
 
-        if (!user.getStatus().equals("ACTIVE")) {
-            throw new RuntimeException("Account is not active. Contact admin.");
+        if ("PENDING".equals(user.getStatus())) {
+            throw new IllegalArgumentException("Your account is pending approval.");
+        }
+        if ("REJECTED".equals(user.getStatus())) {
+            throw new IllegalArgumentException("Your registration was rejected. Contact admin.");
+        }
+        if (!"ACTIVE".equals(user.getStatus())) {
+            throw new IllegalArgumentException("Account is not active. Contact admin.");
         }
 
         if (!request.getPassword().equals(user.getPassword())) {
-            throw new RuntimeException("Invalid password");
+            throw new IllegalArgumentException("Invalid password");
         }
 
         // CHANGE 1: track last login time — used for 7-day never-logged-in check
@@ -191,13 +231,17 @@ public class AuthService {
     // ── RULE 2a: admin manually DEACTIVATES — reason required ─────────────────
     public String deactivateUser(Integer userId, String reason) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if ("ADMIN".equals(user.getRole())) {
+            throw new IllegalArgumentException("Protected Account: Administrative accounts cannot be deactivated.");
+        }
 
         if (!user.getStatus().equals("ACTIVE")) {
-            throw new RuntimeException("User is not ACTIVE. Current status: " + user.getStatus());
+            throw new IllegalArgumentException("User is not ACTIVE. Current status: " + user.getStatus());
         }
         if (reason == null || reason.trim().isEmpty()) {
-            throw new RuntimeException("Reason is required when deactivating");
+            throw new IllegalArgumentException("Reason is required when deactivating");
         }
 
         user.setStatus("INACTIVE");

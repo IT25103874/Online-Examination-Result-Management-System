@@ -350,11 +350,11 @@
                 
                 // Route based on role
                 if (user.role === 'ADMIN') {
-                    window.location.href = '/admin-dashboard.html';
+                    window.location.href = '/pages/admin-dashboard.html';
                 } else if (user.role === 'TEACHER' || user.role === 'LECTURER') {
                     window.location.href = '/lecturer-dashboard.html';
                 } else {
-                    window.location.href = '/student-dashboard.html';
+                    window.location.href = '/pages/student-dashboard.html';
                 }
             } else {
                 const err = await response.text();
@@ -506,9 +506,9 @@
     if (userStr) {
         try {
             const user = JSON.parse(userStr);
-            if (user.role === 'ADMIN') window.location.href = '/admin-dashboard.html';
+            if (user.role === 'ADMIN') window.location.href = '/pages/admin-dashboard.html';
             else if (user.role === 'TEACHER' || user.role === 'LECTURER') window.location.href = '/lecturer-dashboard.html';
-            else window.location.href = '/student-dashboard.html';
+            else window.location.href = '/pages/student-dashboard.html';
         } catch(e) {}
     }
 
