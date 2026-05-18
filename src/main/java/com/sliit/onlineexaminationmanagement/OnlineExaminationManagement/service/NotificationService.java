@@ -6,6 +6,7 @@ import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.entity.
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.entity.NotificationRecipient;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.entity.Student;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.entity.User;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
