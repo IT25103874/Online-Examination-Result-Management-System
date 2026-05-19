@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 @Table(name = "exam_attempt")
 public class ExamEntity {
 
+    // Unique identifier for the exam attempt.
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer attemptId; // Using Integer wrapper for JPA compatibility

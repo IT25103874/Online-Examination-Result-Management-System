@@ -5,6 +5,7 @@ import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.entity.
 import java.util.List;
 
 public interface ExamService {
+    //Validates, creates, and schedules a new examination in the system.
     Exam createAndScheduleExam(Exam exam);
     List<Exam> getAllExams();
     Exam getExamById(int id);

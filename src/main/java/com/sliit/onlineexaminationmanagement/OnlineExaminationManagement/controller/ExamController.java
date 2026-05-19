@@ -43,6 +43,7 @@ public class ExamController {
     }
 
     // New Addition: Update Endpoint
+    // Updates the full details of an existing exam.
     @PutMapping("/{id}")
     public ResponseEntity<Exam> updateExam(@PathVariable int id, @RequestBody Exam exam) {
         Exam updated = examService.updateExam(id, exam);
