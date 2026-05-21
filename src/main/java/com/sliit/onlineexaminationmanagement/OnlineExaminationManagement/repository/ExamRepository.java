@@ -9,10 +9,8 @@ import java.util.List;
 
 @Repository
 public interface ExamRepository extends JpaRepository<Exam, Integer> {
-    //Finds all exams that are active or overlapping within a specific timeframe.
-
+   
     List<Exam> findByStartTimeBeforeAndEndTimeAfter(LocalDateTime endTime, LocalDateTime startTime);
 
-    // New Addition: Search by title ignoring case
     List<Exam> findByTitleContainingIgnoreCase(String title);
 }
