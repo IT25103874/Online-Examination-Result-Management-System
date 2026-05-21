@@ -42,22 +42,21 @@ public class ExamController {
         return ResponseEntity.ok("Exam cancelled successfully.");
     }
 
-    // New Addition: Update Endpoint
-    // Updates the full details of an existing exam.
+    
     @PutMapping("/{id}")
     public ResponseEntity<Exam> updateExam(@PathVariable int id, @RequestBody Exam exam) {
         Exam updated = examService.updateExam(id, exam);
         return ResponseEntity.ok(updated);
     }
 
-    // New Addition: Delete Endpoint
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteExam(@PathVariable int id) {
         examService.deleteExam(id);
         return ResponseEntity.ok("Exam deleted successfully from the system.");
     }
 
-    // New Addition: Search Endpoint (e.g., /api/exams/search?title=java)
+    
     @GetMapping("/search")
     public ResponseEntity<List<Exam>> searchExams(@RequestParam String title) {
         List<Exam> results = examService.searchExamsByTitle(title);
