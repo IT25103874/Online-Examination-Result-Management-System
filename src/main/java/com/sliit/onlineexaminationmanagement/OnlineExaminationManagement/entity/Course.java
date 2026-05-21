@@ -20,7 +20,7 @@ public class Course {
     private int id;
 
     @Column(nullable = false, unique = true)
-    private String courseCode; // e.g., CS101, ENG202
+    private String courseCode; 
 
     @Column(nullable = false)
     private String title;
@@ -28,7 +28,6 @@ public class Course {
     @Column(length = 500)
     private String description;
 
-    // One course can have multiple subjects assigned to it
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Subject> subjects = new ArrayList<>();
 }
