@@ -26,7 +26,7 @@ public class SubjectServiceImpl implements SubjectService {
             throw new RuntimeException("Subject code already exists: " + subject.getSubjectCode());
         }
 
-        // Mocking Course association since Course entity isn't fully provided.
+        
         Course course = new Course();
         course.setId(courseId);
 
@@ -64,7 +64,7 @@ public class SubjectServiceImpl implements SubjectService {
     public Subject updateSubject(int id, Subject subjectDetails) {
         Subject existingSubject = getSubjectById(id);
 
-        // Prevent changing to an already existing code assigned to another subject
+        
         if (!existingSubject.getSubjectCode().equals(subjectDetails.getSubjectCode()) &&
                 subjectRepository.existsBySubjectCode(subjectDetails.getSubjectCode())) {
             throw new RuntimeException("Subject code already exists: " + subjectDetails.getSubjectCode());
