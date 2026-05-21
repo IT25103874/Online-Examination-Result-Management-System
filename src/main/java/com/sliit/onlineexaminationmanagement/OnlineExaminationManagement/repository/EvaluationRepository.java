@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EvaluationRepository extends JpaRepository<Evaluation, Long> {
-    // Basic CRUD methods are automatically inherited
 }
