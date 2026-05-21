@@ -28,7 +28,6 @@ public class ResultService {
 
     public Result updateResult(Long id, Result updatedResult) {
         return resultRepository.findById(id).map(result -> {
-            // These methods MUST match the Result class exactly
             result.setStudentID(updatedResult.getStudentID());
             result.setExamID(updatedResult.getExamID());
             result.setTotalMarks(updatedResult.getTotalMarks());
