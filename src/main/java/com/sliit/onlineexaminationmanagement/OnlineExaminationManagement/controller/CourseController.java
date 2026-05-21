@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/courses") // 👈 Fixed: Added /v1 to match your Postman requests
+@RequestMapping("/api/v1/courses") 
 @CrossOrigin(origins = "*")
 public class CourseController {
 
