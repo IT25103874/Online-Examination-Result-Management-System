@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/evaluations")
-@CrossOrigin(origins = "*") // Allows your frontend application to access the API
+@CrossOrigin(origins = "*") 
 public class EvaluationController {
 
     @Autowired
