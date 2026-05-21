@@ -18,13 +18,13 @@ public class Subject {
     private int id;
 
     @Column(nullable = false, unique = true)
-    private String subjectCode; // e.g., JAVA01, DS02
+    private String subjectCode; 
 
     @Column(nullable = false)
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_course_id", nullable = false)
-    @JsonIgnoreProperties("subjects") // Prevents infinite recursion during JSON serialization
+    @JsonIgnoreProperties("subjects") 
     private Course course;
 }
