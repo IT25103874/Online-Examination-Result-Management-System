@@ -9,7 +9,7 @@ public class ExamEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer attemptId; // Using Integer wrapper for JPA compatibility
+    private Integer attemptId; 
 
     private int studentId;
     private int examId;
