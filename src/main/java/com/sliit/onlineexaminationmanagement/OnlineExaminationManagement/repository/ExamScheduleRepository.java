@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface ExamScheduleRepository extends JpaRepository<ExamSchedule, Integer> {
 
-    // find all schedules for a specific exam
+
     List<ExamSchedule> findByExam_ExamId(Integer examId);
 }
