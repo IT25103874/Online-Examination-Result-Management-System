@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Admin Dashboard - EduAssess Pro</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7fafc;
+            color: #181c1e;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+<!-- Sidebar will be injected here automatically by layout.js -->
+
+<!-- Content Canvas -->
+<main class="ml-64 min-h-screen p-8 lg:p-10 space-y-8">
+    <!-- TopAppBar will be injected here as the first child of <main> by layout.js -->
+
+    <!-- Dashboard Title / Actions -->
+    <div class="flex justify-between items-center mt-6">
+        <div>
+            <h2 class="text-4xl font-bold tracking-tight text-slate-900">Administrative Overview</h2>
+            <p class="text-sm text-slate-500 mt-1">Real-time user control and automated exam monitoring command center.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <span class="text-xs font-semibold bg-blue-50 text-blue-700 px-3 py-1 rounded-full border border-blue-100 flex items-center gap-1 shadow-sm">
+                <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div> System Healthy
+            </span>
+        </div>
+    </div>
+
+    <!-- Statistics Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+        <!-- Card 1: Total Students -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group shadow-sm">
+            <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-600"></div>
+            <div class="flex justify-between items-start mb-3">
+                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Students</span>
+                <div class="p-1.5 bg-blue-50 text-blue-600 rounded-lg">
+                    <span class="material-symbols-outlined text-[20px]">group</span>
+                </div>
+            </div>
+            <div>
+                <span id="stat-total-students" class="text-3xl font-black text-gray-800">0</span>
+                <div class="text-[10px] text-gray-500 mt-0.5">Registered students</div>
+            </div>
+        </div>
+
+        <!-- Card 2: Active Exams -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group shadow-sm">
+            <div class="absolute left-0 top-0 bottom-0 w-1 bg-green-500"></div>
+            <div class="flex justify-between items-start mb-3">
+                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Active Exams</span>
+                <div class="p-1.5 bg-green-50 text-green-600 rounded-lg">
+                    <span class="material-symbols-outlined text-[20px]">hourglass_top</span>
+                </div>
+            </div>
+            <div>
+                <span id="stat-active-exams" class="text-3xl font-black text-gray-800">0</span>
+                <div class="text-[10px] text-gray-500 mt-0.5">Exams currently live</div>
+            </div>
+        </div>
+
+        <!-- Card 3: Scheduled Exams -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group shadow-sm">
+            <div class="absolute left-0 top-0 bottom-0 w-1 bg-purple-600"></div>
+            <div class="flex justify-between items-start mb-3">
+                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Scheduled</span>
+                <div class="p-1.5 bg-purple-50 text-purple-600 rounded-lg">
+                    <span class="material-symbols-outlined text-[20px]">schedule</span>
+                </div>
+            </div>
+            <div>
+                <span id="stat-scheduled-exams" class="text-3xl font-black text-gray-800">0</span>
+                <div class="text-[10px] text-gray-500 mt-0.5">Upcoming exams</div>
+            </div>
+        </div>
+
+        <!-- Card 4: Pending Approvals -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group shadow-sm">
+            <div class="absolute left-0 top-0 bottom-0 w-1 bg-amber-500"></div>
+            <div class="flex justify-between items-start mb-3">
+                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Pending</span>
+                <div class="p-1.5 bg-amber-50 text-amber-600 rounded-lg">
+                    <span class="material-symbols-outlined text-[20px]">pending_actions</span>
+                </div>
+            </div>
+            <div>
+                <span id="stat-pending-approvals" class="text-3xl font-black text-gray-800">0</span>
+                <div class="text-[10px] text-gray-500 mt-0.5">Awaiting validation</div>
+            </div>
+        </div>
+
+        <!-- Card 5: Violations Detected -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group shadow-sm">
+            <div class="absolute left-0 top-0 bottom-0 w-1 bg-red-500"></div>
+            <div class="flex justify-between items-start mb-3">
+                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Violations</span>
+                <div class="p-1.5 bg-red-50 text-red-600 rounded-lg">
+                    <span class="material-symbols-outlined text-[20px]">gavel</span>
+                </div>
+            </div>
+            <div>
+                <span id="stat-violations" class="text-3xl font-black text-gray-800">0</span>
+                <div class="text-[10px] text-gray-500 mt-0.5">Unfocus incidents</div>
+            </div>
+        </div>
+
+        <!-- Card 6: Results Published -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group shadow-sm">
+            <div class="absolute left-0 top-0 bottom-0 w-1 bg-teal-500"></div>
+            <div class="flex justify-between items-start mb-3">
+                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Results</span>
+                <div class="p-1.5 bg-teal-50 text-teal-600 rounded-lg">
+                    <span class="material-symbols-outlined text-[20px]">analytics</span>
+                </div>
+            </div>
+            <div>
+                <span id="stat-results-published" class="text-3xl font-black text-gray-800">0</span>
+                <div class="text-[10px] text-gray-500 mt-0.5">Graded papers</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Analytics Content Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Quick Actions and Activity log -->
+        <div class="space-y-8 lg:col-span-1">
+            <!-- Quick Actions -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-blue-600">bolt</span>
+                    Quick Actions
+                </h3>
+                <div class="grid grid-cols-1 gap-3">
+                    <a href="/pages/courses.html" class="flex items-center gap-3 p-3 border rounded-xl hover:bg-slate-50 transition-colors font-semibold text-sm text-slate-700">
+                        <span class="material-symbols-outlined text-blue-600 p-2 bg-blue-50 rounded-lg">school</span>
+                        <span>Manage Courses Program</span>
+                    </a>
+                    <a href="/pages/exams.html" class="flex items-center gap-3 p-3 border rounded-xl hover:bg-slate-50 transition-colors font-semibold text-sm text-slate-700">
+                        <span class="material-symbols-outlined text-purple-600 p-2 bg-purple-50 rounded-lg">assignment</span>
+                        <span>Schedule Academic Exam</span>
+                    </a>
+                    <a href="/notification-management.html" class="flex items-center gap-3 p-3 border rounded-xl hover:bg-slate-50 transition-colors font-semibold text-sm text-slate-700">
+                        <span class="material-symbols-outlined text-amber-600 p-2 bg-amber-50 rounded-lg">campaign</span>
+                        <span>Publish New Announcement</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Recent System Activity -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-slate-600">history</span>
+                    System Activity Log
+                </h3>
+                <div class="flow-root">
+                    <ul class="-mb-8" id="activity-log-list">
+                        <!-- Simulated / Dynamic entries -->
+                        <li class="relative pb-6">
+                            <div class="relative flex space-x-3">
+                                <div>
+                                    <span class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                                        <span class="material-symbols-outlined text-[16px]">info</span>
+                                    </span>
+                                </div>
+                                <div class="flex-grow pt-1.5 flex justify-between space-x-4 min-w-0">
+                                    <div class="text-xs text-gray-500">
+                                        System metrics synchronized successfully.
+                                    </div>
+                                    <div class="text-right text-[10px] text-gray-400 font-mono whitespace-nowrap">Just now</div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Approvals Directory -->
+        <div class="lg:col-span-2 space-y-8">
+            <!-- Premium Performance Graph Placeholder -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-blue-600">bar_chart</span>
+                    Platform Attendance & Activity Analytics
+                </h3>
+                <div class="h-48 flex items-end justify-between gap-2 pt-6 px-4">
+                    <div class="flex-1 flex flex-col items-center gap-2">
+                        <div class="w-full bg-blue-100 hover:bg-blue-200 rounded-t-lg transition-all h-24 relative group">
+                            <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[10px] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">65%</div>
+                        </div>
+                        <span class="text-[10px] font-bold text-gray-400">Mon</span>
+                    </div>
+                    <div class="flex-1 flex flex-col items-center gap-2">
+                        <div class="w-full bg-blue-100 hover:bg-blue-200 rounded-t-lg transition-all h-32 relative group">
+                            <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[10px] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">78%</div>
+                        </div>
+                        <span class="text-[10px] font-bold text-gray-400">Tue</span>
+                    </div>
+                    <div class="flex-1 flex flex-col items-center gap-2">
+                        <div class="w-full bg-blue-100 hover:bg-blue-200 rounded-t-lg transition-all h-40 relative group">
+                            <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[10px] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">92%</div>
+                        </div>
+                        <span class="text-[10px] font-bold text-gray-400">Wed</span>
+                    </div>
+                    <div class="flex-1 flex flex-col items-center gap-2">
+                        <div class="w-full bg-blue-600 hover:bg-blue-700 rounded-t-lg transition-all h-44 relative group">
+                            <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[10px] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">96%</div>
+                        </div>
+                        <span class="text-[10px] font-bold text-blue-600">Thu (Today)</span>
+                    </div>
+                    <div class="flex-1 flex flex-col items-center gap-2">
+                        <div class="w-full bg-blue-100 hover:bg-blue-200 rounded-t-lg transition-all h-28 relative group">
+                            <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[10px] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">72%</div>
+                        </div>
+                        <span class="text-[10px] font-bold text-gray-400">Fri</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pending Verification Queue -->
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+                <div class="p-6 border-b border-slate-200 bg-slate-50/50 flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-amber-500">pending_actions</span>
+                        Awaiting Verification Queue
+                    </h3>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider font-bold">
+                                <th class="px-6 py-4">Student ID</th>
+                                <th class="px-6 py-4">Name</th>
+                                <th class="px-6 py-4">Email</th>
+                                <th class="px-6 py-4">Register Date</th>
+                                <th class="px-6 py-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pending-table-body" class="divide-y divide-slate-100 text-sm text-slate-700">
+                            <tr>
+                                <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                                    <span class="material-symbols-outlined animate-spin text-2xl align-middle mr-2">sync</span>
+                                    Syncing verification logs...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script type="module">
+    import { initLayout } from '/js/layout.js';
+    import { initAdminDashboard } from '/js/pages/admin-dashboard.js';
+
+    const init = () => {
+        // Render top navbar and sidebar
+        initLayout('Admin Portal Overview');
+        // Start dashboard analytics
+        initAdminDashboard();
+    };
+
+    if (document.readyState === 'loading') {
+        window.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+</script>
+</body>
+</html>

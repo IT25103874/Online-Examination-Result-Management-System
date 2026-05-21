@@ -1,9 +1,9 @@
-package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model;
+package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 import java.time.LocalDate;
 

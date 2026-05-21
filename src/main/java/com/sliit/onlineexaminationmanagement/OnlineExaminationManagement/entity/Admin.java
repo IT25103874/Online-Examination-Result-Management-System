@@ -1,6 +1,5 @@
-package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model;
+package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.entity;
 import jakarta.persistence.*;
-import lombok.*;
 
 @Entity
 @Table(name = "admin")
@@ -22,7 +21,7 @@ public class Admin {
     private String phone;
 
     @ManyToOne
-    @JoinColumn(name = "users_user_id")
+    @JoinColumn(name = "User_user_id")
     private User user;
 
 

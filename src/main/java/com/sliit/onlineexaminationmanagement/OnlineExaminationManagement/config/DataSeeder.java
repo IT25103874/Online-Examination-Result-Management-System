@@ -1,7 +1,7 @@
 package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.config;
 
-import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.Admin;
-import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.User;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.entity.Admin;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.entity.User;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.AdminRepository;
 import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

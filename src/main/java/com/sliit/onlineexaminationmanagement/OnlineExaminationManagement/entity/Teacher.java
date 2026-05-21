@@ -1,7 +1,9 @@
-package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model;
+package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "teacher")

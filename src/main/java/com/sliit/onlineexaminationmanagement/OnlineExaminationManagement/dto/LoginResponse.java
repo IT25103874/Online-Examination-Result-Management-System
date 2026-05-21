@@ -1,8 +1,8 @@
 package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 @Data @NoArgsConstructor @AllArgsConstructor
 public class LoginResponse {
@@ -11,4 +11,8 @@ public class LoginResponse {
     private String email;
     private String role;
     private String status;
+    private String phone;
+    private String courseId;
+    private String dateOfBirth;
+    private String rollNumber;
 }

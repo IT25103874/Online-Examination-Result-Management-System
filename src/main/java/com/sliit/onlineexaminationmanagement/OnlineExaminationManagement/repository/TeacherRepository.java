@@ -1,6 +1,6 @@
 package com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.repository;
 
-import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.model.Teacher;
+import com.sliit.onlineexaminationmanagement.OnlineExaminationManagement.entity.Teacher;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

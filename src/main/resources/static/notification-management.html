@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Notification Management - EduAssess Pro</title>
+    
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#002045",
+                        secondary: "#1960a3",
+                        background: "#f7fafc",
+                        "surface-container-low": "#f1f4f6",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#c4c6cf",
+                        "on-surface-variant": "#43474e"
+                    },
+                    fontFamily: {
+                        "inter": ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f7fafc; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .modal-enter { opacity: 0; transform: scale(0.95); }
+        .modal-enter-active { opacity: 1; transform: scale(1); transition: opacity 300ms, transform 300ms; }
+        .modal-leave { opacity: 1; transform: scale(1); }
+        .modal-leave-active { opacity: 0; transform: scale(0.95); transition: opacity 300ms, transform 300ms; pointer-events: none; }
+        
+        /* Custom scrollbar for textareas */
+        textarea::-webkit-scrollbar { width: 8px; }
+        textarea::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        textarea::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+        textarea::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+    </style>
+</head>
+<body class="bg-background text-gray-800">
+
+<!-- Toast Container -->
+<div id="toast-container" class="fixed bottom-6 right-6 z-[100] flex flex-col gap-2 pointer-events-none"></div>
+
+<!-- SideNavBar -->
+<aside class="fixed h-full left-0 top-0 w-64 flex flex-col bg-white border-r border-slate-200 z-50">
+    <div class="flex flex-col h-full p-4 space-y-2">
+        <div class="mb-8 px-2 mt-4">
+            <span class="text-2xl font-black text-slate-900">EduAssess Pro</span>
+        </div>
+        
+        <!-- Profile Section -->
+        <div class="flex items-center space-x-3 px-2 mb-6">
+            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold border border-blue-200">
+                AD
+            </div>
+            <div class="flex flex-col">
+                <span id="admin-name" class="text-sm font-bold text-gray-900">Administrator</span>
+                <span class="text-xs text-gray-500">Central Command</span>
+            </div>
+        </div>
+        
+        <!-- Main Nav Items -->
+        <nav class="space-y-1 flex-grow">
+            <a class="flex items-center space-x-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg transition-all" href="/pages/admin-dashboard.html">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span class="text-sm font-semibold">Dashboard</span>
+            </a>
+            <a class="flex items-center space-x-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg transition-all" href="/user-management.html">
+                <span class="material-symbols-outlined">group</span>
+                <span class="text-sm font-semibold">User Management</span>
+            </a>
+            <a class="flex items-center space-x-3 px-4 py-3 bg-blue-600 text-white rounded-lg font-bold shadow-sm transition-all scale-95 duration-75" href="/notification-management.html">
+                <span class="material-symbols-outlined">campaign</span>
+                <span class="text-sm">Notifications</span>
+            </a>
+        </nav>
+        </nav>
+        
+        <!-- Footer Nav -->
+        <div class="pt-4 border-t border-slate-200 space-y-1">
+            <a class="flex items-center space-x-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-all font-bold" href="#" onclick="logout(event)">
+                <span class="material-symbols-outlined text-[20px]">logout</span>
+                <span class="text-sm">Logout</span>
+            </a>
+        </div>
+    </div>
+</aside>
+
+<!-- Content Canvas -->
+<main class="ml-64 min-h-screen p-8 lg:p-10">
+
+    <div class="flex justify-between items-end mb-8">
+        <div>
+            <h1 class="text-4xl font-bold tracking-tight text-slate-900">Notification Center</h1>
+            <p class="text-sm text-slate-500 mt-1">Manage system announcements and alerts.</p>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="text-xs font-bold bg-blue-50 text-blue-700 px-3 py-1 rounded-full border border-blue-100 flex items-center gap-1 shadow-sm h-fit">
+                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div> Live Updates
+            </div>
+            <button onclick="openComposerModal()" class="bg-blue-600 text-white px-5 py-2.5 rounded-lg shadow-sm hover:bg-blue-700 transition-colors font-bold flex items-center gap-2">
+                <span class="material-symbols-outlined text-[20px]">send</span>
+                New Communication
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm flex items-center gap-4">
+            <div class="p-3 bg-blue-50 text-blue-600 rounded-lg"><span class="material-symbols-outlined">campaign</span></div>
+            <div>
+                <p class="text-sm text-gray-500 font-medium">Total Sent</p>
+                <h3 class="text-2xl font-black text-gray-800" id="stat-total">0</h3>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm flex items-center gap-4">
+            <div class="p-3 bg-purple-50 text-purple-600 rounded-lg"><span class="material-symbols-outlined">edit_document</span></div>
+            <div>
+                <p class="text-sm text-gray-500 font-medium">Exam Alerts</p>
+                <h3 class="text-2xl font-black text-gray-800" id="stat-exam">0</h3>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm flex items-center gap-4">
+            <div class="p-3 bg-gray-100 text-gray-600 rounded-lg"><span class="material-symbols-outlined">settings</span></div>
+            <div>
+                <p class="text-sm text-gray-500 font-medium">System Notices</p>
+                <h3 class="text-2xl font-black text-gray-800" id="stat-system">0</h3>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm flex items-center gap-4">
+            <div class="p-3 bg-red-50 text-red-600 rounded-lg"><span class="material-symbols-outlined">warning</span></div>
+            <div>
+                <p class="text-sm text-gray-500 font-medium">Warnings</p>
+                <h3 class="text-2xl font-black text-gray-800" id="stat-warning">0</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+        <div class="p-5 border-b border-gray-200 bg-gray-50/50 flex justify-between items-center">
+            <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                <span class="material-symbols-outlined text-blue-500">history</span> Communication History
+            </h2>
+            <div class="relative">
+                <span class="absolute inset-y-0 left-3 flex items-center text-gray-400">
+                    <span class="material-symbols-outlined text-[18px]">search</span>
+                </span>
+                <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Search messages..." class="pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none w-64">
+            </div>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-gray-100 text-gray-500 text-xs uppercase tracking-wider font-bold">
+                        <th class="px-6 py-4">Subject & Message</th>
+                        <th class="px-6 py-4">Category</th>
+                        <th class="px-6 py-4">Target Audience</th>
+                        <th class="px-6 py-4">Delivery</th>
+                        <th class="px-6 py-4">Date Sent</th>
+                        <th class="px-6 py-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="notificationsTableBody" class="divide-y divide-gray-200 text-sm">
+                    <!-- Dynamic Rows -->
+                    <tr><td colspan="6" class="px-6 py-8 text-center text-gray-500">Loading notifications...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<!-- ==================== SIMPLE COMPOSER MODAL ==================== -->
+<div id="composer-modal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onclick="closeComposerModal()"></div>
+    
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative z-10 transform scale-95 transition-transform duration-300 flex flex-col overflow-hidden" id="composer-modal-content">
+        
+        <!-- Header -->
+        <div class="px-6 py-4 border-b flex justify-between items-center bg-gray-50/50 shrink-0">
+            <h3 class="text-xl font-black text-gray-800 flex items-center gap-2">
+                <span class="material-symbols-outlined text-blue-600">send</span> 
+                New Communication
+            </h3>
+            <button type="button" onclick="closeComposerModal()" class="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        
+        <!-- Body: Simple Form -->
+        <form id="composerForm" class="p-6 space-y-5 overflow-y-auto max-h-[70vh]">
+            
+            <!-- Target Audience -->
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-1">Target Audience</label>
+                <select id="targetSelect" onchange="handleTargetChange()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white shadow-sm transition-shadow">
+                    <option value="ALL">All Students</option>
+                    <option value="IT">IT Students</option>
+                    <option value="BM">BM Students</option>
+                    <option value="TEACHERS">All Lecturers</option>
+                    <option value="SPECIFIC">Specific Student</option>
+                </select>
+            </div>
+
+            <!-- Specific User Field (Hidden by default) -->
+            <div id="specificUserContainer" class="hidden bg-gray-50 p-4 rounded-xl border border-gray-100">
+                <label class="block text-sm font-bold text-gray-700 mb-1" id="specificUserLabel">Student ID</label>
+                <input type="number" id="specificUserId" placeholder="e.g. 1004" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+            </div>
+
+            <!-- Category -->
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-1">Category</label>
+                <select id="categorySelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white shadow-sm">
+                    <option value="ANNOUNCEMENT">Announcement</option>
+                    <option value="EXAM">Exam</option>
+                    <option value="WARNING">Warning</option>
+                    <option value="SYSTEM">System</option>
+                </select>
+            </div>
+
+            <!-- Subject -->
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-1">Subject</label>
+                <input type="text" id="messageSubject" required placeholder="e.g. Important Update Regarding..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm font-medium shadow-sm transition-shadow">
+            </div>
+
+            <!-- Message Body -->
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-1">Message Content</label>
+                <textarea id="messageContent" required placeholder="Dear Students,&#10;&#10;Please be informed that..." class="w-full min-h-[150px] px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm font-inter leading-relaxed shadow-sm transition-shadow resize-none"></textarea>
+            </div>
+            
+            <!-- Delivery Method -->
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-1">Delivery Method</label>
+                <select id="deliverySelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white shadow-sm transition-shadow">
+                    <option value="IN_APP">In-App Only</option>
+                    <option value="EMAIL">Email Only</option>
+                    <option value="BOTH">Both</option>
+                </select>
+            </div>
+            
+            <!-- Footer -->
+            <div class="pt-4 border-t mt-6 flex justify-end gap-3">
+                <button type="button" onclick="closeComposerModal()" class="px-5 py-2 text-sm font-bold text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    Cancel
+                </button>
+                <button type="button" onclick="submitComposer()" id="btn-submit" class="px-5 py-2 text-sm font-black text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
+                    <span>Send Notification</span>
+                    <span class="material-symbols-outlined text-[18px]">send</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ==================== VIEW NOTIFICATION MODAL ==================== -->
+<div id="view-modal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onclick="closeViewModal()"></div>
+    
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative z-10 transform scale-95 transition-transform duration-300 flex flex-col overflow-hidden" id="view-modal-content">
+        <!-- Header -->
+        <div class="px-6 py-4 border-b flex justify-between items-center bg-gray-50/50 shrink-0">
+            <h3 class="text-xl font-black text-gray-800 flex items-center gap-2">
+                <span class="material-symbols-outlined text-blue-600">visibility</span> 
+                Communication Details
+            </h3>
+            <button type="button" onclick="closeViewModal()" class="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        
+        <!-- Body -->
+        <div class="p-6 space-y-6 overflow-y-auto max-h-[70vh]">
+            <div class="flex items-start justify-between">
+                <div class="pr-4">
+                    <h2 class="text-lg font-bold text-gray-900" id="view-subject">Subject</h2>
+                    <p class="text-xs font-mono text-gray-500 mt-1" id="view-date">Sent Date</p>
+                </div>
+                <div id="view-badge"></div>
+            </div>
+
+            <div class="bg-gray-50 rounded-xl p-4 border border-gray-100 space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-bold text-gray-500 uppercase">Target Audience</span>
+                    <span class="text-sm font-semibold text-gray-800 bg-white px-2 py-1 rounded shadow-sm border border-gray-200" id="view-audience">All Students</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-bold text-gray-500 uppercase">Delivery Status</span>
+                    <span class="text-xs font-bold text-green-700 bg-green-50 px-2 py-1 rounded border border-green-200 flex items-center gap-1" id="view-delivery">
+                        <span class="material-symbols-outlined text-[14px]">check_circle</span> Sent
+                    </span>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="text-xs font-bold text-gray-500 uppercase mb-2">Message Body</h4>
+                <div class="bg-white border border-gray-200 rounded-lg p-4 text-sm text-gray-800 whitespace-pre-wrap font-inter leading-relaxed" id="view-body">
+                </div>
+            </div>
+        </div>
+        
+        <div class="px-6 py-4 border-t bg-gray-50 flex justify-end shrink-0">
+            <button type="button" onclick="closeViewModal()" class="px-5 py-2 text-sm font-bold text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- Toast Notifications ---
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        const colors = type === 'success' ? 'bg-gray-800 text-white' : 'bg-red-600 text-white';
+        const icon = type === 'success' ? 'check_circle' : 'error';
+        
+        toast.className = `flex items-center gap-3 px-4 py-3 rounded-lg shadow-xl border border-gray-700 ${colors} transform translate-y-10 opacity-0 transition-all duration-300`;
+        toast.innerHTML = `<span class="material-symbols-outlined text-[20px]">${icon}</span><span class="text-sm font-medium">${message}</span>`;
+        
+        container.appendChild(toast);
+        requestAnimationFrame(() => toast.classList.remove('translate-y-10', 'opacity-0'));
+        setTimeout(() => {
+            toast.classList.add('translate-y-10', 'opacity-0');
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
+
+    // --- Auth & Session ---
+    const userStr = localStorage.getItem('user');
+    let currentUser = null;
+    if (!userStr) {
+        window.location.href = '/index.html';
+    } else {
+        try {
+            currentUser = JSON.parse(userStr);
+            if (currentUser.role !== 'ADMIN') {
+                alert('Access Denied. Admins only.');
+                window.location.href = '/index.html';
+            } else {
+                document.getElementById('admin-name').textContent = currentUser.name || 'Administrator';
+            }
+        } catch (e) {
+            window.location.href = '/index.html';
+        }
+    }
+
+    function logout(e) {
+        e.preventDefault();
+        localStorage.removeItem('user');
+        window.location.href = '/index.html';
+    }
+
+    // --- Modal & Composer Logic ---
+    const modal = document.getElementById('composer-modal');
+    const modalContent = document.getElementById('composer-modal-content');
+
+    function openComposerModal() {
+        document.getElementById('composerForm').reset();
+        handleTargetChange();
+        
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        modalContent.classList.remove('scale-95');
+        modalContent.classList.add('scale-100');
+    }
+
+    function closeComposerModal() {
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        modalContent.classList.remove('scale-100');
+        modalContent.classList.add('scale-95');
+    }
+
+    function handleTargetChange() {
+        const val = document.getElementById('targetSelect').value;
+        const container = document.getElementById('specificUserContainer');
+        const idInput = document.getElementById('specificUserId');
+        
+        if(val === 'SPECIFIC') {
+            container.classList.remove('hidden');
+            idInput.required = true;
+        } else {
+            container.classList.add('hidden');
+            idInput.required = false;
+        }
+    }
+
+    // --- View Modal Logic ---
+    const viewModal = document.getElementById('view-modal');
+    const viewModalContent = document.getElementById('view-modal-content');
+
+    function openViewModal(id) {
+        const n = cachedAdminNotifications.find(x => x.notificationId === id);
+        if(!n) return;
+        
+        const cat = getCategoryStyle(n.type);
+        const dateStr = new Date(n.createdAt || Date.now()).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute:'2-digit' });
+        
+        let targetLabel = "All Students";
+        if(n.target === 'ALL') targetLabel = "All Students";
+        else if (n.target === 'IT' || n.target === 'BM') targetLabel = `${n.target} Students`;
+        else if (n.target && n.target.startsWith('USER_')) targetLabel = `Specific Student (${n.target.replace('USER_', '')})`;
+        else if (n.target) targetLabel = n.target;
+        else if (n.studentId) targetLabel = `Student #${n.studentId}`;
+        
+        document.getElementById('view-subject').textContent = n.title || 'Communication Notice';
+        document.getElementById('view-date').textContent = dateStr;
+        document.getElementById('view-body').textContent = n.message || '';
+        document.getElementById('view-audience').textContent = targetLabel;
+        
+        const badgeHTML = `<span class="px-2 py-1 bg-${cat.color}-50 border border-${cat.color}-100 text-${cat.color}-700 text-xs font-bold rounded tracking-wider flex items-center gap-1 shadow-sm"><span class="material-symbols-outlined text-[14px]">${cat.icon}</span>${cat.name}</span>`;
+        document.getElementById('view-badge').innerHTML = badgeHTML;
+        
+        viewModal.classList.remove('opacity-0', 'pointer-events-none');
+        viewModalContent.classList.remove('scale-95');
+        viewModalContent.classList.add('scale-100');
+    }
+
+    function closeViewModal() {
+        viewModal.classList.add('opacity-0', 'pointer-events-none');
+        viewModalContent.classList.remove('scale-100');
+        viewModalContent.classList.add('scale-95');
+    }
+
+    // --- Utility: Category Style Resolver ---
+    function getCategoryStyle(type) {
+        const t = (type || 'ANNOUNCEMENT').toUpperCase();
+        if(t === 'EXAM') return {name: 'EXAM', color: 'purple', icon: 'edit_document'};
+        if(t === 'WARNING') return {name: 'WARNING', color: 'red', icon: 'warning'};
+        if(t === 'SYSTEM') return {name: 'SYSTEM', color: 'gray', icon: 'settings'};
+        return {name: 'ANNOUNCEMENT', color: 'blue', icon: 'campaign'};
+    }
+
+    // --- Fetch History ---
+    let cachedAdminNotifications = [];
+
+    async function loadNotifications() {
+        try {
+            const res = await fetch('/api/admin/notify/all-sent');
+            const tbody = document.getElementById('notificationsTableBody');
+            
+            if (res.ok) {
+                cachedAdminNotifications = await res.json();
+                
+                if (cachedAdminNotifications.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-gray-500">No communications dispatched yet.</td></tr>';
+                } else {
+                    renderTable(cachedAdminNotifications);
+                    updateStats(cachedAdminNotifications);
+                }
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function updateStats(data) {
+        document.getElementById('stat-total').textContent = data.length;
+        let exams = 0, warnings = 0, systems = 0;
+        data.forEach(n => {
+            const cat = (n.type || 'ANNOUNCEMENT').toUpperCase();
+            if(cat === 'EXAM') exams++;
+            if(cat === 'WARNING') warnings++;
+            if(cat === 'SYSTEM') systems++;
+        });
+        document.getElementById('stat-exam').textContent = exams;
+        document.getElementById('stat-system').textContent = systems;
+        document.getElementById('stat-warning').textContent = warnings;
+    }
+
+    function renderTable(data) {
+        const tbody = document.getElementById('notificationsTableBody');
+        tbody.innerHTML = '';
+        
+        data.forEach(n => {
+            console.log(n); // temporarily add to inspect response
+            const cat = getCategoryStyle(n.type);
+            const dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute:'2-digit' });
+            
+            let targetLabel = "All Students";
+            if(n.studentId) targetLabel = `Student #${n.studentId}`;
+            // If the backend supported teacher/all targets we'd parse them here.
+            
+            // Assume mixed delivery for now as visual placeholder, or parse if n.deliveryMethod exists
+            const delLabel = `<div class="flex gap-1"><span class="material-symbols-outlined text-[16px] text-blue-500" title="In-App">notifications</span></div>`;
+
+            const tr = document.createElement('tr');
+            tr.className = "hover:bg-gray-50 transition-colors group";
+            tr.innerHTML = `
+                <td class="px-6 py-4">
+                    <p class="text-sm font-bold text-gray-800 line-clamp-1 max-w-xs" title="${n.message}">${n.title || 'Communication Notice'}</p>
+                    <p class="text-xs text-gray-500 line-clamp-1 max-w-xs mt-0.5">${n.message}</p>
+                </td>
+                <td class="px-6 py-4">
+                    <span class="px-2 py-1 bg-${cat.color}-50 border border-${cat.color}-100 text-${cat.color}-700 text-[10px] font-bold rounded tracking-wider">${cat.name}</span>
+                </td>
+                <td class="px-6 py-4">
+                    <span class="text-xs text-gray-600 font-bold bg-gray-100 px-2 py-1 rounded">${targetLabel}</span>
+                </td>
+                <td class="px-6 py-4">${delLabel}</td>
+                <td class="px-6 py-4 text-xs text-gray-500 font-mono">${dateStr}</td>
+                <td class="px-6 py-4 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                        <button onclick="openViewModal(${n.notificationId})" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full border border-transparent hover:border-blue-100 transition-colors" title="View">
+                            <span class="material-symbols-outlined text-[16px]">visibility</span>
+                        </button>
+                        <button onclick="deleteNotification(${n.notificationId})" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full border border-transparent hover:border-red-100 transition-colors" title="Delete">
+                            <span class="material-symbols-outlined text-[16px]">delete</span>
+                        </button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function filterTable() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        const filtered = cachedAdminNotifications.filter(n => (n.message || '').toLowerCase().includes(query) || (n.title || '').toLowerCase().includes(query));
+        renderTable(filtered);
+    }
+
+    // --- Submit Notification ---
+    async function submitComposer() {
+        const form = document.getElementById('composerForm');
+        if(!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        const btn = document.getElementById('btn-submit');
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[18px]">sync</span><span>Sending...</span>';
+        btn.disabled = true;
+
+        const target = document.getElementById('targetSelect').value;
+        const sub = document.getElementById('messageSubject').value;
+        const msg = document.getElementById('messageContent').value;
+        const del = document.getElementById('deliverySelect').value;
+        const cat = document.getElementById('categorySelect').value;
+        
+        console.log({
+            title: sub,
+            message: msg,
+            category: cat
+        });
+        
+        let url = '';
+        if (target === 'ALL') url = '/api/admin/notify/all';
+        else if (target === 'IT') url = '/api/admin/notify/course/IT';
+        else if (target === 'BM') url = '/api/admin/notify/course/BM';
+        else if (target === 'SPECIFIC') {
+            const sid = document.getElementById('specificUserId').value;
+            url = `/api/admin/notify/user/${sid}`;
+        } else {
+            // Fallback for new unmapped endpoints
+            url = '/api/admin/notify/all'; 
+        }
+
+        try {
+            // Note: Updated payload structure reflecting the new composer capability
+            const payload = { 
+                title: sub,
+                message: msg,
+                category: cat,
+                deliveryMethod: del,
+                targetAudience: target
+            };
+            
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                showToast("Notification sent successfully!");
+                loadNotifications();
+                setTimeout(() => { closeComposerModal(); }, 1000);
+            } else {
+                showToast("Failed to send notification.", "error");
+            }
+        } catch (error) {
+            console.error(error);
+            showToast("Network error. Backend not reachable.", "error");
+        } finally {
+            btn.innerHTML = originalHtml;
+            btn.disabled = false;
+        }
+    }
+
+    async function deleteNotification(id) {
+        if(!confirm('Are you sure you want to delete this communication globally?')) return;
+        
+        try {
+            const res = await fetch(`/api/admin/notify/delete/${id}`, { method: 'DELETE' });
+            if(res.ok) {
+                loadNotifications(); 
+                showToast("Deleted successfully.");
+            } else {
+                showToast("Failed to delete.", "error");
+            }
+        } catch(e) {
+            showToast("Network error.", "error");
+        }
+    }
+
+    // Run on load and poll
+    window.addEventListener('DOMContentLoaded', () => {
+        loadNotifications();
+        setInterval(loadNotifications, 5000);
+        
+        // ESC key to close modals
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeComposerModal();
+                closeViewModal();
+            }
+        });
+    });
+</script>
+</body>
+</html>
