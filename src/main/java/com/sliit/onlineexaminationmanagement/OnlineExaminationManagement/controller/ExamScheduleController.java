@@ -17,7 +17,6 @@ public class ExamScheduleController {
 
     private final ExamScheduleService examScheduleService;
 
-    // create exam schedule + auto send notification
     @PostMapping("/create")
     public ResponseEntity<String> createExamSchedule(
             @RequestBody CreateExamScheduleRequest request) {
@@ -25,14 +24,14 @@ public class ExamScheduleController {
                 examScheduleService.createExamScheduleAndNotify(request));
     }
 
-    // get all exam schedules
+
     @GetMapping("/all")
     public ResponseEntity<List<ExamSchedule>> getAllExamSchedules() {
         return ResponseEntity.ok(
                 examScheduleService.getAllExamSchedules());
     }
 
-    // get schedules by exam
+  
     @GetMapping("/exam/{examId}")
     public ResponseEntity<List<ExamSchedule>> getByExam(
             @PathVariable Integer examId) {
@@ -40,14 +39,14 @@ public class ExamScheduleController {
                 examScheduleService.getExamSchedulesByExam(examId));
     }
 
-    // admin views all exam notifications sent
+   
     @GetMapping("/notifications")
     public ResponseEntity<List<ExamNotification>> getAllExamNotifications() {
         return ResponseEntity.ok(
                 examScheduleService.getAllExamNotifications());
     }
 
-    // admin views exam notifications by course
+ 
     @GetMapping("/notifications/course/{courseId}")
     public ResponseEntity<List<ExamNotification>> getBycourse(
             @PathVariable String courseId) {
